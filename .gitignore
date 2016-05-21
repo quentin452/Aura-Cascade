@@ -1,48 +1,22 @@
-*.class
-dist
-download
-push.sh
-remotebuild.py
-secret.properties
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
 
-## gradle
-/.gradle
-/build
-/eclipse
-/gradlew.bat
-
-## ForgeGradle
-/run
-/out
-/ForgeModule
-/libs/downloads
-/libs/forgelibs
-## idea
-*.iml
+# idea
+out
 *.ipr
 *.iws
+*.iml
+.idea
 
-## eclipse
-/.settings
-/.metadata
-/.classpath
-/.project
-/bin
-/.idea
-/client/
-/Server/
-/classes/
-## misc
-/libs/Thaumcraft-deobf*.jar*
-/libs/*1.7.10*
-TCDEOBF*
-## Ignore OS cache files
-*.DS_Store
-_MACOSX
-Thumbs.db
-/forgelibs
+# gradle
+build
+.gradle
 
-## Ignore unnecessary files
-*.log
-*.lck
-/target/
+# other
+eclipse
+run

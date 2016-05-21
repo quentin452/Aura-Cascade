@@ -36,7 +36,7 @@ public class ClientProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent evt) {
         super.preInit(evt);
         ModelHandler.registerModels();
-        new VersionChecker().init();
+       // new VersionChecker().init();
     }
 
     @Override
