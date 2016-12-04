@@ -9,9 +9,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import pixlepix.auracascade.block.*;
-import pixlepix.auracascade.data.EnumAura;
+import pixlepix.auracascade.data.EnumRainbowColor;
 import pixlepix.auracascade.item.*;
-import pixlepix.auracascade.item.books.*;
 import pixlepix.auracascade.registry.BlockRegistry;
 
 import java.util.Locale;
@@ -25,14 +24,13 @@ public final class ModelHandler {
         registerAngelSteelTools();
         registerFairyCharms();
         registerMulticolors();
-        registerBooks();
         registerAmulets();
 
         Item fairyTorchItem = Item.getItemFromBlock(BlockRegistry.getFirstBlockFromClass(FairyTorch.class));
-      //  ModelLoader.setCustomMeshDefinition(fairyTorchItem, ("minecraft:barrier"));
+        //  ModelLoader.setCustomMeshDefinition(fairyTorchItem, ("minecraft:barrier"));
         //TODO CustomMeshDefinitions
-       // ModelLoader.setCustomMeshDefinition(fairyTorchItem, (ItemMeshDefinition) new ResourceLocation("minecraft:barrier"));
-       // ModelLoader.setCustomMeshDefinition(fairyTorchItem, );
+        // ModelLoader.setCustomMeshDefinition(fairyTorchItem, (ItemMeshDefinition) new ResourceLocation("minecraft:barrier"));
+        // ModelLoader.setCustomMeshDefinition(fairyTorchItem, );
         ModelLoader.setCustomModelResourceLocation(fairyTorchItem, 0, new ModelResourceLocation("minecraft:barrier", "inventory"));
 
         registerItem(BlockRegistry.getFirstItemFromClass(ItemMirror.class));
@@ -45,6 +43,7 @@ public final class ModelHandler {
         registerItem(BlockRegistry.getFirstItemFromClass(ItemComboSword.class));
         registerItem(BlockRegistry.getFirstItemFromClass(ItemTransmutingSword.class));
         registerItem(BlockRegistry.getFirstItemFromClass(ItemLexicon.class));
+        registerItem(BlockRegistry.getFirstItemFromClass(ItemAuraCrystal.class));
 
         // ItemBlocks
         registerItem(Item.getItemFromBlock(BlockRegistry.getBlockFromClassAndName(AuraBlock.class, "auraNode")));
@@ -55,8 +54,6 @@ public final class ModelHandler {
         registerItem(Item.getItemFromBlock(BlockRegistry.getBlockFromClassAndName(AuraBlock.class, "auraNodepumpProjectile")));
         registerItem(Item.getItemFromBlock(BlockRegistry.getBlockFromClassAndName(AuraBlock.class, "auraNodepumpRedstone")));
         registerItem(Item.getItemFromBlock(BlockRegistry.getBlockFromClassAndName(AuraBlockCapacitor.class, "auraNodecapacitor")));
-        registerItem(Item.getItemFromBlock(BlockRegistry.getBlockFromClassAndName(AuraBlock.class, "auraNodeblack")));
-        registerItem(Item.getItemFromBlock(BlockRegistry.getBlockFromClassAndName(AuraBlock.class, "auraNodeorange")));
         registerItem(Item.getItemFromBlock(BlockRegistry.getBlockFromClassAndName(AuraBlock.class, "auraNodeconserve")));
         registerItem(Item.getItemFromBlock(BlockRegistry.getBlockFromClassAndName(AuraBlock.class, "auraNodeflux")));
         registerItem(Item.getItemFromBlock(BlockRegistry.getBlockFromClassAndName(AuraBlock.class, "auraNodecraftingCenter")));
@@ -70,8 +67,6 @@ public final class ModelHandler {
 
         registerItem(Item.getItemFromBlock(BlockRegistry.getFirstBlockFromClass(BlockMagicRoad.class)));
         registerItem(Item.getItemFromBlock(BlockRegistry.getFirstBlockFromClass(BlockTrampoline.class)));
-        registerItem(Item.getItemFromBlock(BlockRegistry.getFirstBlockFromClass(BlockStorageBookshelf.class)));
-        registerItem(Item.getItemFromBlock(BlockRegistry.getFirstBlockFromClass(BlockBookshelfCoordinator.class)));
 
         registerItem(Item.getItemFromBlock(BlockRegistry.getBlockFromClassAndName(BlockExplosionContainer.class, "fortifiedWood")));
         registerItem(Item.getItemFromBlock(BlockRegistry.getBlockFromClassAndName(BlockExplosionContainer.class, "fortifiedGlass")));
@@ -121,18 +116,18 @@ public final class ModelHandler {
 
         for (Item i : BlockRegistry.getItemFromClass(ItemAngelsteelSword.class)) {
             ModelLoader.registerItemVariants(i, new ResourceLocation("aura:angel_sword"), new ResourceLocation(("aura:angel_sword")),  new ResourceLocation("aura:angel_swordGreen"),  new ResourceLocation("aura:angel_swordOrange")
-                    , new ResourceLocation("aura:angel_swordRed"), new ResourceLocation("aura:angel_swordViolet"), new ResourceLocation("aura:angel_swordYellow"));
+                    , new ResourceLocation("aura:angel_swordRed"), new ResourceLocation("aura:angel_swordViolet"), new ResourceLocation("aura:angel_swordYellow"), new ResourceLocation("aura:angel_swordBlue"));
             ModelLoader.setCustomMeshDefinition(i, new ItemMeshDefinition() {
                 @Override
                 public ModelResourceLocation getModelLocation(ItemStack stack) {
                     switch (ItemAngelsteelSword.getAura(stack)) {
-                        case WHITE_AURA: return new ModelResourceLocation("aura:angel_sword", "inventory");
-                        case GREEN_AURA: return new ModelResourceLocation("aura:angel_swordGreen", "inventory");
-                        case ORANGE_AURA: return new ModelResourceLocation("aura:angel_swordOrange", "inventory");
-                        case YELLOW_AURA: return new ModelResourceLocation("aura:angel_swordYellow", "inventory");
-                        case BLUE_AURA: return new ModelResourceLocation("aura:angel_swordBlue", "inventory");
-                        case VIOLET_AURA: return new ModelResourceLocation("aura:angel_swordViolet", "inventory");
-                        case RED_AURA:
+                        case WHITE: return new ModelResourceLocation("aura:angel_sword", "inventory");
+                        case GREEN: return new ModelResourceLocation("aura:angel_swordGreen", "inventory");
+                        case ORANGE: return new ModelResourceLocation("aura:angel_swordOrange", "inventory");
+                        case YELLOW: return new ModelResourceLocation("aura:angel_swordYellow", "inventory");
+                        case BLUE: return new ModelResourceLocation("aura:angel_swordBlue", "inventory");
+                        case VIOLET: return new ModelResourceLocation("aura:angel_swordViolet", "inventory");
+                        case RED:
                         default: return new ModelResourceLocation("aura:angel_swordRed", "inventory");
                     }
                 }
@@ -151,26 +146,8 @@ public final class ModelHandler {
     }
 
     private static void registerMulticolors() {
-        Item crystal = BlockRegistry.getFirstItemFromClass(ItemAuraCrystal.class);
-        for (int i = 0; i < EnumAura.values().length; i++) {
-            String name = "aura:" + EnumAura.values()[i].name.toLowerCase(Locale.ROOT) + "Crystal";
-            ModelLoader.setCustomModelResourceLocation(crystal, i, new ModelResourceLocation(name, "inventory"));
-        }
-
         for (Item i : BlockRegistry.getItemFromClass(ItemMaterial.class)) {
             registerItem(i);
-        }
-    }
-
-    private static void registerBooks() {
-        @SuppressWarnings("unchecked")
-		Set<Class<? extends ItemStorageBook>> classes = ImmutableSet.of(BasicStorageBook.class, DenseStorageBook.class, ExtremelyDenseStorageBook.class,
-                ExtremelyLightStorageBook.class, FarmingStorageBook.class, LightStorageBook.class, MineralStorageBook.class, MobStorageBook.class,
-                ModStorageBook.class, SuperDenseStorageBook.class, SuperLightStorageBook.class, VeryDenseStorageBook.class, VeryLightStorageBook.class);
-
-        for (Class<? extends ItemStorageBook> clazz : classes) {
-            Item item = BlockRegistry.getFirstItemFromClass(clazz);
-            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation("aura:storageBook", "inventory"));
         }
     }
 

@@ -99,7 +99,7 @@ public class AuraUtil {
 
                 for (EnumFacing d2 : EnumFacing.VALUES) {
                     Block b2 = w.getBlockState(pos.offset(d1).offset(d2)).getBlock();
-                    b2.onNeighborBlockChange(w, pos.offset(d1).offset(d2), w.getBlockState(pos.offset(d1).offset(d2)), b);
+                    b2.onNeighborChange(w, pos.offset(d1).offset(d2), pos);
                 }
             }
         }
@@ -159,9 +159,9 @@ public class AuraUtil {
             EnumFacing connectingDirection = e.rotateYCCW();
             BlockPos corner = centerPos.offset(e, 5);
             BlockPos connectingCorner = centerPos.offset(connectingDirection, 5);
-            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(corner, centerPos, particle, 1, 1, 1, 1), new NetworkRegistry.TargetPoint(entity.worldObj.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
-            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(corner, connectingCorner, particle, 1, 1, 1, 1), new NetworkRegistry.TargetPoint(entity.worldObj.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
-            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(corner, topPos, particle, 1, 1, 1, 1), new NetworkRegistry.TargetPoint(entity.worldObj.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
+            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(corner, centerPos, particle, 1, .4, .4), new NetworkRegistry.TargetPoint(entity.worldObj.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
+            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(corner, connectingCorner, particle, 1, .4, .4), new NetworkRegistry.TargetPoint(entity.worldObj.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
+            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(corner, topPos, particle, 1, .4, .4), new NetworkRegistry.TargetPoint(entity.worldObj.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
 
         }
     }

@@ -1,22 +1,20 @@
 package pixlepix.auracascade.block.tile;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import pixlepix.auracascade.AuraCascade;
 import pixlepix.auracascade.block.AuraBlock;
-import pixlepix.auracascade.data.AuraQuantity;
-import pixlepix.auracascade.data.AuraQuantityList;
-import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.data.PosUtil;
 import pixlepix.auracascade.network.PacketBurst;
 
@@ -25,19 +23,16 @@ import java.util.LinkedList;
 
 public class AuraTile extends TileEntity implements ITickable {
 
-    public AuraQuantityList storage = new AuraQuantityList();
-    public HashMap<BlockPos, AuraQuantityList> burstMap = null;
+    public int storage;
+    public HashMap<BlockPos, Integer> burstMap = null;
     public LinkedList<BlockPos> connected = new LinkedList<BlockPos>();
     public boolean hasConnected = false;
     public int energy = 0;
     public int initialYValue = -1;
 
-    //Used by Orange Aura
-    public HashMap<BlockPos, Integer> inducedBurstMap = new HashMap<BlockPos, Integer>();
-
     public AuraTile() {
     }
-    
+
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
 
@@ -45,9 +40,13 @@ public class AuraTile extends TileEntity implements ITickable {
         readCustomNBT(nbt);
     }
 
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+        return oldState.getBlock() != newSate.getBlock();
+    }
+
     protected void readCustomNBT(NBTTagCompound nbt) {
-        NBTTagList storageNBT = nbt.getTagList("storage", 10);
-        storage.readFromNBT(storageNBT);
+        storage = nbt.getInteger("storage");
 
         NBTTagList connectionsNBT = nbt.getTagList("connected", 10);
         connected = new LinkedList<BlockPos>();
@@ -72,15 +71,14 @@ public class AuraTile extends TileEntity implements ITickable {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbt) {
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
         writeCustomNBT(nbt);
+        return nbt;
     }
 
     protected void writeCustomNBT(NBTTagCompound nbt) {
-        NBTTagList storageNBT = new NBTTagList();
-        storage.writeToNBT(storageNBT);
-        nbt.setTag("storage", storageNBT);
+        nbt.setInteger("storage", storage);
 
         NBTTagList connectionsNBT = new NBTTagList();
         for (BlockPos tuple : connected) {
@@ -137,15 +135,18 @@ public class AuraTile extends TileEntity implements ITickable {
             //This should only happen on initial placement
             //Not on 'follow ups'
             if (!hasConnected) {
-                burst(pos, "spell", EnumAura.WHITE_AURA, 1D);
+                burst(pos, "spell");
             }
 
         }
     }
 
-    public void burst(BlockPos target, String particle, EnumAura aura, double composition) {
-        AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(getPos(), target, particle, aura.r, aura.g, aura.b, composition), new NetworkRegistry.TargetPoint(worldObj.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32));
+    public void burst(BlockPos target, String particle, double r, double g, double b) {
+        AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(getPos(), target, particle, r, g, b), new NetworkRegistry.TargetPoint(worldObj.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32));
+    }
 
+    public void burst(BlockPos target, String particle) {
+        burst(target, particle, 1, 1, 1);
     }
 
     @Override
@@ -179,7 +180,7 @@ public class AuraTile extends TileEntity implements ITickable {
 
                 verifyConnections();
                 energy = 0;
-                burstMap = new HashMap<BlockPos, AuraQuantityList>();
+                burstMap = new HashMap<BlockPos, Integer>();
                 double totalWeight = 0;
                 for (BlockPos tuple : connected) {
                     if (canTransfer(tuple)) {
@@ -187,113 +188,62 @@ public class AuraTile extends TileEntity implements ITickable {
                     }
                 }
                 //Add a balance so the node doesn't completley discharge
-                //Based off 'sending aura to yourself'
+                //Based off 'sending color to yourself'
                 totalWeight += this instanceof AuraTileCapacitor ? 0 : 20 * 20;
 
                 for (BlockPos pos : connected) {
                     double factor = getWeight(pos) / totalWeight;
                     AuraTile other = (AuraTile) worldObj.getTileEntity(pos);
-                    AuraQuantityList quantityList = new AuraQuantityList();
-                    for (EnumAura enumAura : EnumAura.values()) {
 
-                        if (canTransfer(pos, enumAura)) {
-                            int auraHere = storage.get(enumAura);
-                            int auraThere = other.storage.get(enumAura);
-                            int diff = Math.abs(auraHere - auraThere);
-                            if (diff > 25) {
-                                quantityList.add(new AuraQuantity(enumAura, (int) (auraHere * (float) factor)));
-                            }
+                    if (canTransfer(pos)) {
+                        int diff = Math.abs(storage - other.storage);
+                        if (diff > 25) {
 
-
+                            burstMap.put(pos, (int) (storage * factor));
                         }
-                    }
-                    if (!quantityList.empty()) {
-                        burstMap.put(pos, quantityList);
+
+
                     }
                 }
             }
-
-
         }
+
+
+
         if (worldObj.getTotalWorldTime() % 20 == 1) {
             verifyConnections();
             if (burstMap != null) {
                 for (BlockPos tuple : connected) {
                     if (burstMap.containsKey(tuple)) {
-                        transferAura(tuple, burstMap.get(tuple), true);
+                        transferAura(tuple, burstMap.get(tuple));
 
                     }
                 }
                 burstMap = null;
             }
-        }
-        if (worldObj.getTotalWorldTime() % 20 == 2) {
-            verifyConnections();
-            if (inducedBurstMap != null) {
-                for (BlockPos pos : connected) {
-                    if (inducedBurstMap.containsKey(pos)) {
-                        int num = inducedBurstMap.get(pos);
-                        AuraTile otherTile = (AuraTile) worldObj.getTileEntity(pos);
-                        int deltaFlow;
-                        int altNum = 0;
-                        if (otherTile.inducedBurstMap != null) {
-                            altNum = otherTile.inducedBurstMap.containsKey(getPos()) ? otherTile.inducedBurstMap.get(getPos()) : 0;
-                            deltaFlow = num - altNum;
-                        } else {
-                            deltaFlow = num;
-                        }
-                        if (deltaFlow > 0) {
-                            AuraQuantityList auraToSend = (AuraQuantityList) storage.clone();
-                            otherTile.inducedBurstMap.put(getPos(), 0);
-                            auraToSend.set(EnumAura.ORANGE_AURA, 0);
-                            if (auraToSend.getTotalAura() > 0) {
-                                auraToSend = auraToSend.percent(Math.min(1F, (float) deltaFlow / (float) storage.getTotalAura()) - storage.get(EnumAura.ORANGE_AURA));
-                                transferAura(pos, auraToSend, false);
-                            }
-                        } else {
-                            inducedBurstMap.put(pos, 0);
-                            if (otherTile.inducedBurstMap != null) {
-                                otherTile.inducedBurstMap.put(getPos(), altNum - num);
-                            }
-                        }
-                    }
-                }
-                inducedBurstMap = new HashMap<BlockPos, Integer>();
-            }
             markDirty();
             worldObj.markBlockRangeForRenderUpdate(pos.getX(), pos.getY(), pos.getX(), pos.getX(), pos.getY(), pos.getZ());
             worldObj.notifyBlockOfStateChange(pos, worldObj.getBlockState(pos).getBlock());
             worldObj.markAndNotifyBlock(this.pos, this.worldObj.getChunkFromBlockCoords(this.pos),this.blockType.getDefaultState(), this.blockType.getDefaultState(), 2);
+
         }
 
-        for (AuraQuantity quantity : storage.quantityList) {
-            if (quantity.getNum() > 0) {
-                quantity.getType().updateTick(worldObj, getPos(), quantity);
+    }
+
+    public void transferAura(BlockPos pos, int auraToTransfer) {
+        if (storage >= auraToTransfer) {
+            ((AuraTile) worldObj.getTileEntity(pos)).storage += auraToTransfer;
+            storage -= auraToTransfer;
+
+            burst(pos, "square");
+            int power = (int) ((this.pos.getY() - pos.getY()) * auraToTransfer);
+            if (power > 0) {
+                ((AuraTile) worldObj.getTileEntity(pos)).receivePower(power);
             }
         }
     }
 
-    public void transferAura(BlockPos pos, AuraQuantityList list, boolean triggerOrange) {
-        if (storage.greaterThan(list)) {
-            ((AuraTile) worldObj.getTileEntity(pos)).storage.add(list);
-            storage.subtract(list);
-            for (EnumAura aura : EnumAura.values()) {
-                if (list.get(aura) > 0) {
-                    burst(pos, "square", aura, list.getComposition(aura));
-                    int power = (int) ((this.pos.getY() - pos.getY()) * list.get(aura) * aura.getRelativeMass(worldObj));
-                    if (power > 0) {
-                        ((AuraTile) worldObj.getTileEntity(pos)).receivePower(power, aura);
-                    }
-                    if (!(!triggerOrange && aura == EnumAura.ORANGE_AURA) && list.get(aura) != 0) {
-                        aura.onTransfer(worldObj, getPos(), new AuraQuantity(aura, list.get(aura)), PosUtil.directionTo(getPos(), pos));
-       
-                    }
-                }
-            }
-        }
-    }
-
-    public void receivePower(int power, EnumAura type) {
+    public void receivePower(int power) {
         energy += power;
     }
 
@@ -301,18 +251,11 @@ public class AuraTile extends TileEntity implements ITickable {
         boolean isLower = pos.getY() < this.pos.getY();
 
         boolean isSame = pos.getY() == this.pos.getY();
-        return worldObj.getTileEntity(pos) instanceof AuraTile && (isSame || isLower) && !(worldObj.isBlockIndirectlyGettingPowered(this.pos) > 0 && !(this instanceof AuraTileBlack));
+        return worldObj.getTileEntity(pos) instanceof AuraTile && (isSame || isLower) && !(worldObj.isBlockIndirectlyGettingPowered(this.pos) > 0) && ((AuraTile) worldObj.getTileEntity(pos)).canReceive(getPos());
 
     }
 
-    public boolean canTransfer(BlockPos pos, EnumAura aura) {
-        if (!canTransfer(pos)) {
-            return false;
-        }
-        return !(pos.getY() != this.pos.getY() && aura == EnumAura.ORANGE_AURA) && !(pos.getY() == this.pos.getY() && aura == EnumAura.BLACK_AURA) && ((AuraTile) worldObj.getTileEntity(pos)).canReceive(getPos(), aura);
-    }
-
-    public boolean canReceive(BlockPos source, EnumAura aura) {
+    public boolean canReceive(BlockPos source) {
         return true;
     }
 
@@ -320,8 +263,10 @@ public class AuraTile extends TileEntity implements ITickable {
         return Math.pow(20 - Math.sqrt(pos.distanceSq(getPos())), 2);
     }
 
-	@Override
-    public Packet<?> getDescriptionPacket() {
+
+
+    @Override
+    public SPacketUpdateTileEntity getUpdatePacket() {
         NBTTagCompound nbt = new NBTTagCompound();
         writeCustomNBT(nbt);
         return new SPacketUpdateTileEntity(getPos(), -999, nbt);

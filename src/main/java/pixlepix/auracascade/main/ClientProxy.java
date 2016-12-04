@@ -1,8 +1,6 @@
 package pixlepix.auracascade.main;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EffectRenderer;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,7 +19,6 @@ import pixlepix.auracascade.block.entity.EntityFairy;
 import pixlepix.auracascade.block.tile.AuraTilePedestal;
 import pixlepix.auracascade.lexicon.*;
 import pixlepix.auracascade.main.event.ClientEventHandler;
-import pixlepix.auracascade.main.verionChecker.VersionChecker;
 import pixlepix.auracascade.render.OverlayRender;
 import pixlepix.auracascade.render.RenderEntityFairy;
 import pixlepix.auracascade.render.RenderPedestal;
@@ -38,7 +35,6 @@ public class ClientProxy extends CommonProxy {
     public void preInit(FMLPreInitializationEvent evt) {
         super.preInit(evt);
         ModelHandler.registerModels();
-        new VersionChecker().init();
     }
 
     @Override

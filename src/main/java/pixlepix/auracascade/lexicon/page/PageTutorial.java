@@ -23,7 +23,7 @@ public class PageTutorial extends PageText {
 
     @Override
     public void onOpened(IGuiLexiconEntry gui) {
-        button = new GuiButton(101, gui.getLeft() + 30, gui.getTop() + gui.getHeight() - 50, gui.getWidth() - 60, 20, I18n.translateToLocal("aura.startTutorial"));
+        button = new GuiButton(101, gui.getLeft() + 30, gui.getTop() + gui.getHeight() - 50, gui.getWidth() - 60, 20, I18n.translateToLocal("startTutorial"));
         gui.getButtonList().add(button);
     }
 

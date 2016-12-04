@@ -5,7 +5,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import pixlepix.auracascade.AuraCascade;
 import pixlepix.auracascade.block.AuraBlockCapacitor;
-import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.network.PacketBurst;
 
 /**
@@ -43,7 +42,7 @@ public class AuraTileCapacitor extends AuraTile {
                 ticksDisabled--;
             }
 
-            if (worldObj.getTotalWorldTime() % 19 == 0 && storage.getTotalAura() >= storageValues[storageValueIndex]) {
+            if (worldObj.getTotalWorldTime() % 20 == 19 && storage >= storageValues[storageValueIndex]) {
                 aboutToBurst = true;
                 worldObj.setBlockState(getPos(), worldObj.getBlockState(getPos()).withProperty(AuraBlockCapacitor.BURSTING, true), 3);
                 AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(2, getPos().getX() + .5, getPos().getY() + .5, getPos().getZ() + .5), new NetworkRegistry.TargetPoint(worldObj.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 32));
@@ -51,7 +50,7 @@ public class AuraTileCapacitor extends AuraTile {
 
             if (worldObj.getTotalWorldTime() % 5 == 0 && aboutToBurst) {
                 aboutToBurst = false;
-                ticksDisabled = 110;
+                ticksDisabled = 410;
 
                 worldObj.setBlockState(getPos(), worldObj.getBlockState(getPos()).withProperty(AuraBlockCapacitor.BURSTING, false), 3);
                 worldObj.notifyBlockOfStateChange(pos, worldObj.getBlockState(pos).getBlock());
@@ -60,12 +59,12 @@ public class AuraTileCapacitor extends AuraTile {
     }
 
     @Override
-    public boolean canTransfer(BlockPos tuple, EnumAura aura) {
-        return storage.getTotalAura() >= storageValues[storageValueIndex] && super.canTransfer(tuple, aura);
+    public boolean canTransfer(BlockPos tuple) {
+        return storage >= storageValues[storageValueIndex] && super.canTransfer(tuple);
     }
 
     @Override
-    public boolean canReceive(BlockPos source, EnumAura aura) {
-        return ticksDisabled == 0 && super.canReceive(source, aura);
+    public boolean canReceive(BlockPos source) {
+        return super.canReceive(source) && ticksDisabled == 0;
     }
 }

@@ -16,11 +16,11 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import pixlepix.auracascade.AuraCascade;
 import pixlepix.auracascade.QuestManager;
-import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.lexicon.CategoryManager;
 import pixlepix.auracascade.lexicon.ILexiconable;
 import pixlepix.auracascade.lexicon.LexiconEntry;
 import pixlepix.auracascade.lexicon.common.core.helper.ItemNBTHelper;
+import pixlepix.auracascade.registry.BlockRegistry;
 import pixlepix.auracascade.registry.CraftingBenchRecipe;
 import pixlepix.auracascade.registry.ITTinkererItem;
 import pixlepix.auracascade.registry.ThaumicTinkererRecipe;
@@ -85,7 +85,7 @@ public class ItemLexicon extends Item implements ITTinkererItem {
 
                         par2EntityPlayer.openGui(AuraCascade.instance, 0, par3World, 0, 0, 0);
                         if (!par3World.isRemote) {
-                        	//TODO fix sounds
+                            //TODO fix sounds
                             //par3World.playSoundAtEntity(par2EntityPlayer, "aura:lexiconOpen", 0.5F, 1F);
                         }
                         return EnumActionResult.PASS;
@@ -101,7 +101,7 @@ public class ItemLexicon extends Item implements ITTinkererItem {
     }
 
     @Override
-    public  ActionResult<ItemStack> onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer, EnumHand hand){
+    public  ActionResult<ItemStack> onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer, EnumHand hand) {
         String force = getForcedPage(par1ItemStack);
         if (force != null && !force.isEmpty()) {
             LexiconEntry entry = getEntryFromForce(par1ItemStack);
@@ -117,9 +117,10 @@ public class ItemLexicon extends Item implements ITTinkererItem {
 
         AuraCascade.proxy.setLexiconStack(par1ItemStack);
         par3EntityPlayer.openGui(AuraCascade.instance, 0, par2World, 0, 0, 0);
-        if (!par2World.isRemote && !skipSound)
-        	//TODO Fix soundat
-        //par2World.playSoundAt(par3EntityPlayer, "aura:lexiconOpen", 0.5F, 1F);
+        if (!par2World.isRemote && !skipSound){
+            //TODO Fix soundat
+            //par2World.playSoundAt(par3EntityPlayer, "aura:lexiconOpen", 0.5F, 1F);
+        }
         skipSound = false;
         return new ActionResult<ItemStack>(EnumActionResult.PASS, par1ItemStack);
     }
@@ -162,7 +163,7 @@ public class ItemLexicon extends Item implements ITTinkererItem {
 
     @Override
     public ThaumicTinkererRecipe getRecipeItem() {
-        return new CraftingBenchRecipe(new ItemStack(this), "CB", "  ", 'C', ItemAuraCrystal.getCrystalFromAura(EnumAura.WHITE_AURA), 'B', new ItemStack(Items.BOOK));
+        return new CraftingBenchRecipe(new ItemStack(this), "CB", "  ", 'C', new ItemStack(BlockRegistry.getFirstItemFromClass(ItemAuraCrystal.class)), 'B', new ItemStack(Items.BOOK));
     }
 
     @Override
