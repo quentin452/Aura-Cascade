@@ -51,8 +51,6 @@ public class CommonProxy {
     public int renderPass;
     public BlockRegistry registry;
     public SimpleNetworkWrapper networkWrapper;
-    public Block chiselBookshelf;
-
 
     public void preInit(FMLPreInitializationEvent event) {
         Config.init(event);
@@ -112,8 +110,6 @@ public class CommonProxy {
     public void postInit(FMLPostInitializationEvent event) {
         registry.postInit();
         LexiconData.init();
-        //chiselBookshelf = GameRegistry.findBlock("chisel", "chisel.blockBookshelf");
-       // chiselBookshelf = ForgeRegistries.BLOCKS.getValue(key)
         if (Loader.isModLoaded("Thaumcraft")) {
             TCCompat.postInit();
         }

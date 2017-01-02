@@ -80,8 +80,6 @@ public class PacketBurst implements IMessage, IMessageHandler<PacketBurst, IMess
                                 double yp = msg.from.getY() + (velocity.yCoord * i) + .5;
                                 double zp = msg.from.getZ() + (velocity.zCoord * i) + .5;
                                 ParticleEffects.spawnParticle(msg.particle, xp, yp, zp, velocity.xCoord * .1, .15, velocity.zCoord * .1, msg.r, msg.g, msg.b);
-
-
                         }
 
                     }

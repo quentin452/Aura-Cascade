@@ -81,10 +81,7 @@ public class ClientProxy extends CommonProxy {
 
 
     public void addBlockDestroyEffects(BlockPos pos) {
-
         Minecraft.getMinecraft().effectRenderer.addBlockDestroyEffects(pos, Minecraft.getMinecraft().theWorld.getBlockState(pos));
-
-
     }
 
     @Override
@@ -94,12 +91,14 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void addEffectBypassingLimit(Particle entityFX) {
-        if (Config.overrideMaxParticleLimit) {
-        	
-           Minecraft.getMinecraft().effectRenderer.fxLayers[entityFX.getFXLayer()][entityFX.particleAlpha != 1 ? 0 : 1].add(entityFX);
+        //if (Config.overrideMaxParticleLimit) {
+        if(true){
+         //  Minecraft.getMinecraft().effectRenderer.fxLayers[entityFX.getFXLayer()][entityFX.particleAlpha != 1 ? 0 : 1].add(entityFX);
+          //  Minecraft.getMinecraft().effectRenderer.fxLayers[entityFX.getFXLayer()][entityFX.particleAlpha != 1 ? 0 : 1].add(entityFX);
+            Minecraft.getMinecraft().effectRenderer.addEffect(entityFX);
         } else {
         	//TODO Fix the alternative to the config.
-          //Minecraft.getMinecraft().theWorld.spawnEntityInWorld(entityFX);
+             //Minecraft.getMinecraft().theWorld.spawnEntityInWorld(entityFX);
         }
     }
 }
