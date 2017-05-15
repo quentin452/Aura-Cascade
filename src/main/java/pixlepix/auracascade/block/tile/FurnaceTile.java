@@ -62,10 +62,10 @@ public class FurnaceTile extends ConsumerTile {
             if (FurnaceRecipes.instance().getSmeltingResult(stack) != null) {
 
                 //Kill the stack
-                if (stack.stackSize == 0) {
+                if (stack.getCount() == 0) {
                     entityItem.setDead();
                 } else {
-                    stack.stackSize--;
+                    stack.shrink(1);
                 }
 
                 AuraUtil.respawnItemWithParticles(world, entityItem, FurnaceRecipes.instance().getSmeltingResult(stack).copy());

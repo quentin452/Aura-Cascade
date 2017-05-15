@@ -47,7 +47,7 @@ public class GuiLexiconEntry extends GuiLexicon implements IGuiLexiconEntry, IPa
     }
 
     public void renderToolTip(ItemStack p_146285_1_, int p_146285_2_, int p_146285_3_) {
-        List<String> list = p_146285_1_.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
+        List<String> list = p_146285_1_.getTooltip(this.mc.player, this.mc.gameSettings.advancedItemTooltips);
 
         for (int k = 0; k < list.size(); ++k) {
             if (k == 0) {
@@ -140,7 +140,7 @@ public class GuiLexiconEntry extends GuiLexicon implements IGuiLexiconEntry, IPa
                     String cmd = "/botania-share " + entry.unlocalizedName;
 
                     mc.ingameGUI.getChatGUI().addToSentMessages(cmd);
-                    mc.thePlayer.sendChatMessage(cmd);
+                    mc.player.sendChatMessage(cmd);
                     break;
             }
 
@@ -172,7 +172,7 @@ public class GuiLexiconEntry extends GuiLexicon implements IGuiLexiconEntry, IPa
                 tutorial.poll();
                 positionTutorialArrow();
                 if (tutorial.isEmpty()) {
-                    mc.thePlayer.addChatMessage(new TextComponentString("aura.tutorialEnded"));
+                    mc.player.sendChatMessage(String.valueOf(new TextComponentString("aura.tutorialEnded")));
                     hasTutorialArrow = false;
                 }
             }

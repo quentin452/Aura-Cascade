@@ -63,7 +63,7 @@ public class EnchantEventHandler {
                 String dustName = StringUtils.replace(oreName, "ore", "ingot");
                 if (OreDictionary.getOres(dustName).size() != 0) {
                     ItemStack result = OreDictionary.getOres(dustName).get(0);
-                    result.stackSize = 2;
+                    result.setCount(2);
                     return result;
                 }
             }

@@ -41,8 +41,6 @@ import pixlepix.auracascade.registry.ThaumicTinkererRecipe;
 import java.util.ArrayList;
 import java.util.List;
 
-import static sun.audio.AudioPlayer.player;
-
 public class AuraBlock extends Block implements IToolTip, ITTinkererBlock, ITileEntityProvider {
 
     public static String name = "auraNode";
@@ -160,7 +158,7 @@ public class AuraBlock extends Block implements IToolTip, ITTinkererBlock, ITile
 
                 pedestal.itemStack = player.inventory.getCurrentItem() != ItemStack.EMPTY ? player.inventory.decrStackSize(player.inventory.currentItem, 1) : null;
                 world.markBlocksDirtyVertical(pos.getX(), pos.getZ(), pos.getX(), pos.getZ());
-                world.notifyBlockOfStateChange(pos, this);
+                //world.notifyBlockOfStateChange(pos, this);
                 return true;
 
             } else if (world.getTileEntity(pos) instanceof AuraTile && player.inventory.getCurrentItem() == ItemStack.EMPTY) {
@@ -205,9 +203,9 @@ public class AuraBlock extends Block implements IToolTip, ITTinkererBlock, ITile
             ItemStack stack = ((EntityItem) entity).getEntityItem();
             if (stack.getItem() instanceof ItemAuraCrystal) {
                 if (te instanceof AuraTile) {
-                    ((AuraTile) te).storage += 1000 * stack.stackSize;
+                    ((AuraTile) te).storage += 1000 * stack.getCount();
                     world.markBlocksDirtyVertical(pos.getX(), pos.getZ(), pos.getX(), pos.getZ());
-                    world.notifyNeighborsOfStateChange(pos, this);
+                    //world.notifyNeighborsOfStateChange(pos, this);
                     AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, entity.posX, entity.posY, entity.posZ), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32));
 
                     entity.setDead();

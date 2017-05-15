@@ -36,10 +36,10 @@ public class AuraTilePump extends AuraTilePumpBase {
                         addFuel(Config.pumpCoalDuration * TileEntityFurnace.getItemBurnTime(stack) / 5, Config.pumpCoalSpeed);
 
                         //Kill the stack
-                        if (stack.stackSize == 1) {
+                        if (stack.getCount() == 1) {
                             entityItem.setDead();
                         } else {
-                            stack.stackSize--;
+                            stack.shrink(1);
                         }
                         AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, entityItem.posX, entityItem.posY, entityItem.posZ), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32));
                         break;

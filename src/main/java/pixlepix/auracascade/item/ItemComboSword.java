@@ -31,7 +31,7 @@ public class ItemComboSword extends ItemSword implements ITTinkererItem {
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean bool) {
         super.addInformation(stack, player, list, bool);
         if (stack.getTagCompound() != null) {
-            double timeLeft = (double) (stack.getTagCompound().getLong(NBT_TAG_LAST_TIME) + 200 - player.worldObj.getTotalWorldTime());
+            double timeLeft = (double) (stack.getTagCompound().getLong(NBT_TAG_LAST_TIME) + 200 - player.world.getTotalWorldTime());
             timeLeft /= 20;
             if (timeLeft > 0) {
                 list.add(String.format("Combo: %.3f", getComboMultiplier(stack.getTagCompound().getInteger(NBT_TAG_COMBO_COUNT))));

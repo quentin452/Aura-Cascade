@@ -223,7 +223,7 @@ public class AuraTile extends TileEntity implements ITickable {
             }
             markDirty();
             world.markBlockRangeForRenderUpdate(pos.getX(), pos.getY(), pos.getX(), pos.getX(), pos.getY(), pos.getZ());
-            world.notifyBlockOfStateChange(pos, world.getBlockState(pos).getBlock());
+           // world.notifyBlockOfStateChange(pos, world.getBlockState(pos).getBlock());
             world.markAndNotifyBlock(this.pos, this.world.getChunkFromBlockCoords(this.pos),this.blockType.getDefaultState(), this.blockType.getDefaultState(), 2);
 
         }

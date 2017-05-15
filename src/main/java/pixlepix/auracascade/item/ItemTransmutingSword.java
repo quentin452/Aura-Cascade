@@ -53,18 +53,18 @@ public class ItemTransmutingSword extends Item implements ITTinkererItem {
 
     @Override
     public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
-        if (!target.worldObj.isRemote) if (entityMap.get(target.getClass()) != null && target.getHealth() > 0) {
+        if (!target.world.isRemote) if (entityMap.get(target.getClass()) != null && target.getHealth() > 0) {
             target.setDead();
             Class<? extends Entity> clazz = entityMap.get(target.getClass());
             Entity newEntity = null;
             try {
-                newEntity = clazz.getConstructor(World.class).newInstance(target.worldObj);
+                newEntity = clazz.getConstructor(World.class).newInstance(target.world);
                 newEntity.setPosition(target.posX, target.posY, target.posZ);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
 
-            target.worldObj.spawnEntity(newEntity);
+            target.world.spawnEntity(newEntity);
             if (newEntity instanceof EntitySlime && target instanceof EntitySlime) {
                 // ((EntitySlime) newEntity).setSlimeSize((((EntitySlime) target).getSlimeSize()));
                 //TODO: This requires ASM, and seems fairly pointless.

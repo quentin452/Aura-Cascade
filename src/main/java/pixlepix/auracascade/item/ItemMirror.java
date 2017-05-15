@@ -59,12 +59,11 @@ public class ItemMirror extends Item implements ITTinkererItem {
     /**
      * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
      *
-     * @param stack
      * @param world
      * @param player
      */
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand){
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand){
         AxisAlignedBB axisAlignedBB = new AxisAlignedBB(player.posX - 6, player.posY - 6, player.posZ - 6, player.posX + 6, player.posY + 6, player.posZ + 6);
         ArrayList<EntityFireball> fireballs = (ArrayList<EntityFireball>) world.getEntitiesWithinAABB(EntityFireball.class, axisAlignedBB);
         for (EntityFireball fireball : fireballs) {
@@ -72,18 +71,18 @@ public class ItemMirror extends Item implements ITTinkererItem {
                 redirect(fireball);
             }
         }
-        AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(7, player.posX, player.posY, player.posZ), new NetworkRegistry.TargetPoint(player.worldObj.provider.getDimension(), player.posX, player.posY, player.posZ, 32));
+        AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(7, player.posX, player.posY, player.posZ), new NetworkRegistry.TargetPoint(player.world.provider.getDimension(), player.posX, player.posY, player.posZ, 32));
 
-        return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
+        return new ActionResult<ItemStack>(EnumActionResult.PASS, player.getHeldItem(hand));
     }
 
     public void redirect(EntityFireball entity) {
 
-        if (!entity.worldObj.isRemote && !(entity instanceof EntityWitherSkull)) {
+        if (!entity.world.isRemote && !(entity instanceof EntityWitherSkull)) {
             AxisAlignedBB axisAlignedBB = new AxisAlignedBB(entity.posX - 100, entity.posY - 100, entity.posZ - 100, entity.posX + 100, entity.posY + 100, entity.posZ + 100);
 
 
-            List<EntityFireball> targets = ImmutableList.copyOf(Iterables.filter(entity.worldObj.getEntitiesWithinAABB(EntityFireball.class, axisAlignedBB), new Predicate<EntityFireball>() {
+            List<EntityFireball> targets = ImmutableList.copyOf(Iterables.filter(entity.world.getEntitiesWithinAABB(EntityFireball.class, axisAlignedBB), new Predicate<EntityFireball>() {
                 @Override
                 public boolean apply(EntityFireball input) {
                     return input.shootingEntity instanceof EntityBlaze || input.shootingEntity instanceof EntityGhast;
@@ -100,7 +99,7 @@ public class ItemMirror extends Item implements ITTinkererItem {
                 entity.accelerationX = entity.motionX * .3;
                 entity.accelerationY = entity.motionY * .3;
                 entity.accelerationZ = entity.motionZ * .3;
-                AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, entity.posX, entity.posY, entity.posZ), new NetworkRegistry.TargetPoint(entity.worldObj.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
+                AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, entity.posX, entity.posY, entity.posZ), new NetworkRegistry.TargetPoint(entity.world.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
             }
         }
     }

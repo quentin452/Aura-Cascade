@@ -24,7 +24,7 @@ public class StorageItemStack {
     }
 
     public StorageItemStack(ItemStack stack) {
-        this(stack.getItem(), stack.stackSize, stack.getItemDamage(), stack.getTagCompound());
+        this(stack.getItem(), stack.getCount(), stack.getItemDamage(), stack.getTagCompound());
     }
 
     public static StorageItemStack readFromNBT(NBTTagCompound compound) {

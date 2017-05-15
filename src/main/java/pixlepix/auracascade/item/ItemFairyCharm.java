@@ -95,7 +95,7 @@ public class ItemFairyCharm extends Item implements ITTinkererItem {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand){
+    public ActionResult<ItemStack> onItemRightClick( World world, EntityPlayer player, EnumHand hand){
         if (!world.isRemote) {
             ItemStack ringStack = EventHandler.getBaubleFromInv(ItemFairyRing.class, player);
             if (ringStack != null) {
@@ -115,19 +115,19 @@ public class ItemFairyCharm extends Item implements ITTinkererItem {
                     ItemFairyRing.makeFaries(ringStack, player);
 
 
-                    consumeInventoryItem(player.inventory, this, stack.getItemDamage());
+                    consumeInventoryItem(player.inventory, this, player.getHeldItem(hand).getItemDamage());
 
                   //  AuraCascade.analytics.eventDesign("fairyAdded", fairyClasses[stack.getItemDamage()].getName());
                 }
             }
         }
-        return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
+        return new ActionResult<ItemStack>(EnumActionResult.PASS, player.getHeldItem(hand));
     }
 
     //Metadata sensitive version of InventoryPlayer.consumeInventoryItem
     public void consumeInventoryItem(InventoryPlayer inventoryPlayer, Item item, int meta) {
         int i = -1;
-        for (int j = 0; j < inventoryPlayer.mainInventory.length; ++j) {
+        for (int j = 0; j < inventoryPlayer.mainInventory.size(); ++j) {
             if (inventoryPlayer.mainInventory[j] != null && inventoryPlayer.mainInventory[j].getItem() == item && inventoryPlayer.mainInventory[j].getItemDamage() == meta) {
                 i = j;
             }

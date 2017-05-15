@@ -31,7 +31,7 @@ public class ProcessorTile extends ConsumerTile {
                 }
             }
         }
-        return null;
+        return ItemStack.EMPTY;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ProcessorTile extends ConsumerTile {
         List<EntityItem> nearbyItems = world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)));
         for (EntityItem entityItem : nearbyItems) {
             ItemStack stack = entityItem.getEntityItem();
-            if (getDoubleResult(stack) != null) {
+            if (getDoubleResult(stack) != ItemStack.EMPTY) {
                 return true;
             }
         }
@@ -74,10 +74,10 @@ public class ProcessorTile extends ConsumerTile {
         List<EntityItem> nearbyItems = world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)));
         for (EntityItem entityItem : nearbyItems) {
             ItemStack stack = entityItem.getEntityItem();
-            if (getDoubleResult(stack) != null) {
+            if (getDoubleResult(stack) != ItemStack.EMPTY) {
                 resultStack = getDoubleResult(stack);
-                resultStack.stackSize = oreMultFactor();
-                stack.stackSize--;
+                resultStack.setCount(oreMultFactor());
+                stack.shrink(1);
                 spawnInWorld(resultStack, entityItem);
                 return;
             }
@@ -93,9 +93,9 @@ public class ProcessorTile extends ConsumerTile {
                 Iterator<ItemStack> recipeItemIter = ingredients.iterator();
                 while (recipeItemIter.hasNext()) {
                     ItemStack curStack = recipeItemIter.next();
-                    if (curStack.stackSize <= entityStack.stackSize && curStack.getItemDamage() == entityStack.getItemDamage() && curStack.getItem() == entityStack.getItem()) {
+                    if (curStack.getCount() <= entityStack.getCount() && curStack.getItemDamage() == entityStack.getItemDamage() && curStack.getItem() == entityStack.getItem()) {
                         spawnNear = entityItem;
-                        entityStack.stackSize -= curStack.stackSize;
+                        entityStack.shrink(curStack.getCount());
                         recipeItemIter.remove();
                         break;
                     }
@@ -107,7 +107,7 @@ public class ProcessorTile extends ConsumerTile {
     }
 
     public boolean spawnInWorld(ItemStack resultStack, EntityItem entityItem) {
-        if (resultStack != null) {
+        if (resultStack != ItemStack.EMPTY) {
             AuraUtil.respawnItemWithParticles(world, entityItem, resultStack);
             return true;
         }

@@ -86,7 +86,7 @@ public class AuraTilePedestal extends AuraTile implements IInventory {
     @Override
     protected void writeCustomNBT(NBTTagCompound nbt) {
         super.writeCustomNBT(nbt);
-        if (itemStack != null) {
+        if (itemStack != ItemStack.EMPTY) {
             NBTTagCompound compound = new NBTTagCompound();
             itemStack.writeToNBT(compound);
             nbt.setTag("itemStack", compound);
@@ -108,13 +108,13 @@ public class AuraTilePedestal extends AuraTile implements IInventory {
 
     @Override
     public ItemStack decrStackSize(int slot, int amt) {
-        if (itemStack != null) {
-            if (itemStack.stackSize <= amt) {
+        if (itemStack != ItemStack.EMPTY) {
+            if (itemStack.getCount() <= amt) {
                 setInventorySlotContents(slot, null);
             } else {
                 itemStack = itemStack.splitStack(amt);
-                if (itemStack.stackSize == 0) {
-                    itemStack = null;
+                if (itemStack.getCount() == 0) {
+                    itemStack = ItemStack.EMPTY;
                 }
             }
         }
@@ -124,7 +124,7 @@ public class AuraTilePedestal extends AuraTile implements IInventory {
     @Override
     public ItemStack removeStackFromSlot(int p_70304_1_) {
         ItemStack stack = itemStack;
-        itemStack = null;
+        itemStack = ItemStack.EMPTY;
         return stack;
     }
 
@@ -190,8 +190,6 @@ public class AuraTilePedestal extends AuraTile implements IInventory {
 
     @Override
     public void clear() {
-        itemStack = null;
+        itemStack = itemStack.EMPTY;
     }
-
-
 }

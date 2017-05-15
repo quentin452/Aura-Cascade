@@ -34,7 +34,7 @@ public class ItemAngelsteelIngot extends Item implements ITTinkererItem, ISpecia
 
     @Override
     public boolean onEntityItemUpdate(EntityItem entityItem) {
-        if (entityItem.worldObj.getTotalWorldTime() % 4 == 0 && entityItem.onGround && !entityItem.worldObj.isRemote && entityItem.getEntityItem().getItemDamage() < AngelsteelToolHelper.MAX_DEGREE - 1) {
+        if (entityItem.world.getTotalWorldTime() % 4 == 0 && entityItem.onGround && !entityItem.world.isRemote && entityItem.getEntityItem().getItemDamage() < AngelsteelToolHelper.MAX_DEGREE - 1) {
             EntityItem[] targetStacks = new EntityItem[3];
             targetStacks[0] = entityItem;
             int i = 1;
@@ -52,7 +52,7 @@ public class ItemAngelsteelIngot extends Item implements ITTinkererItem, ISpecia
 
             if (i != 3) {
                 AxisAlignedBB range = new AxisAlignedBB(entityItem.posX - 3, entityItem.posY - 3, entityItem.posZ - 3, entityItem.posX + 3, entityItem.posY + 3, entityItem.posZ + 3);
-                List<EntityItem> entityItems = entityItem.worldObj.getEntitiesWithinAABB(EntityItem.class, range);
+                List<EntityItem> entityItems = entityItem.world.getEntitiesWithinAABB(EntityItem.class, range);
                 for (EntityItem nearbyItem : entityItems) {
                     ItemStack nearbyStack = nearbyItem.getEntityItem();
                     if (nearbyItem != entityItem && nearbyStack.getItem() == this && nearbyStack.getItemDamage() == degree) {
@@ -78,9 +78,9 @@ public class ItemAngelsteelIngot extends Item implements ITTinkererItem, ISpecia
                 for (EntityItem item : targetStacks) {
                     item.getEntityItem().stackSize--;
                 }
-                EntityItem item = new EntityItem(entityItem.worldObj, entityItem.posX, entityItem.posY, entityItem.posZ, new ItemStack(this, 1, degree + 1));
-                entityItem.worldObj.spawnEntity(item);
-                AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, item.posX, item.posY, item.posZ), new NetworkRegistry.TargetPoint(item.worldObj.provider.getDimension(), item.posX, item.posY, item.posZ, 32));
+                EntityItem item = new EntityItem(entityItem.world, entityItem.posX, entityItem.posY, entityItem.posZ, new ItemStack(this, 1, degree + 1));
+                entityItem.world.spawnEntity(item);
+                AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, item.posX, item.posY, item.posZ), new NetworkRegistry.TargetPoint(item.world.provider.getDimension(), item.posX, item.posY, item.posZ, 32));
             }
         }
         return false;

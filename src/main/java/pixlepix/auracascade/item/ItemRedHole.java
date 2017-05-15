@@ -37,7 +37,7 @@ public class ItemRedHole extends Item implements ITTinkererItem {
 
     @Override
     public boolean onEntityItemUpdate(EntityItem entityItem) {
-        World world = entityItem.worldObj;
+        World world = entityItem.world;
         if (!world.isRemote && world.getTotalWorldTime() % 100 == 0) {
             world.createExplosion(entityItem, entityItem.posX, entityItem.posY, entityItem.posZ, 12F, true);
             return true;
