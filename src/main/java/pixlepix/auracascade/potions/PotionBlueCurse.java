@@ -39,7 +39,7 @@ public class PotionBlueCurse extends Potion {
     public void performEffect(EntityLivingBase entity, int amplifier) {
 
         if (entity.getHealth() * 2 < entity.getMaxHealth()) {
-            entity.attackEntityFrom(DamageSource.magic, 4.0F);
+            entity.attackEntityFrom(DamageSource.MAGIC, 4.0F);
         }
     }
 }

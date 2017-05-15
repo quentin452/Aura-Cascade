@@ -28,7 +28,7 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public World getWorld() {
-        return Minecraft.getMinecraft().theWorld;
+        return Minecraft.getMinecraft().world;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public EntityPlayer getPlayer() {
-        return Minecraft.getMinecraft().thePlayer;
+        return Minecraft.getMinecraft().player;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ClientProxy extends CommonProxy {
 
 
     public void addBlockDestroyEffects(BlockPos pos) {
-        Minecraft.getMinecraft().effectRenderer.addBlockDestroyEffects(pos, Minecraft.getMinecraft().theWorld.getBlockState(pos));
+        Minecraft.getMinecraft().effectRenderer.addBlockDestroyEffects(pos, Minecraft.getMinecraft().world.getBlockState(pos));
     }
 
     @Override

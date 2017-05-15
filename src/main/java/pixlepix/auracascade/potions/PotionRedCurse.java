@@ -40,8 +40,8 @@ public class PotionRedCurse extends Potion {
         BlockPos pos = new BlockPos(entity);
 
         for (BlockPos pos_ : BlockPos.getAllInBox(pos.add(-5, -2, -5), pos.add(6, 3, 6))) {
-            if (entity.worldObj.isAirBlock(pos_) && Blocks.FIRE.canPlaceBlockAt(entity.worldObj, pos_)) {
-                entity.worldObj.setBlockState(pos_, Blocks.FIRE.getDefaultState());
+            if (entity.world.isAirBlock(pos_) && Blocks.FIRE.canPlaceBlockAt(entity.world, pos_)) {
+                entity.world.setBlockState(pos_, Blocks.FIRE.getDefaultState());
             }
         }
     }

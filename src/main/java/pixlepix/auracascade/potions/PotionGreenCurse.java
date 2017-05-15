@@ -40,10 +40,10 @@ public class PotionGreenCurse extends Potion {
     @Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
 
-        entity.attackEntityFrom(DamageSource.magic, 2.0F);
+        entity.attackEntityFrom(DamageSource.MAGIC, 2.0F);
 
 
-        List<EntityLivingBase> entities = entity.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(entity.posX - 5, entity.posY - 5, entity.posZ - 5, entity.posX + 5, entity.posY + 5, entity.posZ + 5));
+        List<EntityLivingBase> entities = entity.world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(entity.posX - 5, entity.posY - 5, entity.posZ - 5, entity.posX + 5, entity.posY + 5, entity.posZ + 5));
         if (entities.size() > 0) {
             EntityLivingBase entityLiving = entities.get(new Random().nextInt(entities.size()));
             if (entityLiving != entity) {

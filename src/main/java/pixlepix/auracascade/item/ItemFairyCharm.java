@@ -11,6 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import pixlepix.auracascade.block.entity.*;
 import pixlepix.auracascade.data.EnumRainbowColor;
@@ -22,7 +23,6 @@ import pixlepix.auracascade.registry.ThaumicTinkererRecipeMulti;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by pixlepix on 12/9/14.
@@ -98,7 +98,7 @@ public class ItemFairyCharm extends Item implements ITTinkererItem {
     public ActionResult<ItemStack> onItemRightClick( World world, EntityPlayer player, EnumHand hand){
         if (!world.isRemote) {
             ItemStack ringStack = EventHandler.getBaubleFromInv(ItemFairyRing.class, player);
-            if (ringStack != null) {
+            if (ringStack != ItemStack.EMPTY) {
                 if (ringStack.getTagCompound() == null) {
                     ringStack.setTagCompound(new NBTTagCompound());
                 }
@@ -106,7 +106,7 @@ public class ItemFairyCharm extends Item implements ITTinkererItem {
                 if (fairies.length < 15) {
                     int[] newFairies = Arrays.copyOf(fairies, fairies.length + 1);
 
-                    newFairies[newFairies.length - 1] = stack.getItemDamage();
+                    newFairies[newFairies.length - 1] = player.getHeldItem(hand).getItemDamage();
 
 
                     ringStack.getTagCompound().setIntArray("fairyList", newFairies);
@@ -128,14 +128,14 @@ public class ItemFairyCharm extends Item implements ITTinkererItem {
     public void consumeInventoryItem(InventoryPlayer inventoryPlayer, Item item, int meta) {
         int i = -1;
         for (int j = 0; j < inventoryPlayer.mainInventory.size(); ++j) {
-            if (inventoryPlayer.mainInventory[j] != null && inventoryPlayer.mainInventory[j].getItem() == item && inventoryPlayer.mainInventory[j].getItemDamage() == meta) {
+            if (inventoryPlayer.mainInventory.get(j) != ItemStack.EMPTY && inventoryPlayer.mainInventory.get(j).getItem() == item && inventoryPlayer.mainInventory.get(j).getItemDamage() == meta) {
                 i = j;
             }
         }
 
         if (i >= 0) {
-            if (--inventoryPlayer.mainInventory[i].stackSize <= 0) {
-                inventoryPlayer.mainInventory[i] = null;
+            if ((inventoryPlayer.mainInventory.get(i).getCount() - 1) <= 0) {
+                inventoryPlayer.mainInventory.get(i).setCount(0);
             }
         }
     }
@@ -199,7 +199,7 @@ public class ItemFairyCharm extends Item implements ITTinkererItem {
     }
 
     @Override
-    public void getSubItems(Item item, CreativeTabs tabs, List<ItemStack> list) {
+    public void getSubItems(Item item, CreativeTabs tabs, NonNullList<ItemStack> list) {
         for (int i = 0; i < fairyClasses.length; i++) {
             list.add(new ItemStack(item, 1, i));
         }

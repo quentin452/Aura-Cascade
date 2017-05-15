@@ -73,18 +73,18 @@ public class ItemLexicon extends Item implements ITTinkererItem {
     }
 
     @Override
-    public EnumActionResult onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (par2EntityPlayer.isSneaking()) {
-            Block block = par3World.getBlockState(pos).getBlock();
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (player.isSneaking()) {
+            Block block = worldIn.getBlockState(pos).getBlock();
             if (block != null) {
                 if (block instanceof ILexiconable) {
-                    LexiconEntry entry = ((ILexiconable) block).getEntry(par3World, pos, par2EntityPlayer, par1ItemStack);
+                    LexiconEntry entry = ((ILexiconable) block).getEntry(worldIn, pos, player, player.getHeldItem(hand));
                     if (entry != null) {
                         AuraCascade.proxy.setEntryToOpen(entry);
-                        AuraCascade.proxy.setLexiconStack(par1ItemStack);
+                        AuraCascade.proxy.setLexiconStack(player.getHeldItem(hand));
 
-                        par2EntityPlayer.openGui(AuraCascade.instance, 0, par3World, 0, 0, 0);
-                        if (!par3World.isRemote) {
+                        player.openGui(AuraCascade.instance, 0, worldIn, 0, 0, 0);
+                        if (!worldIn.isRemote) {
                             //TODO fix sounds
                             //par3World.playSoundAtEntity(par2EntityPlayer, "aura:lexiconOpen", 0.5F, 1F);
                         }
@@ -101,28 +101,28 @@ public class ItemLexicon extends Item implements ITTinkererItem {
     }
 
     @Override
-    public  ActionResult<ItemStack> onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer, EnumHand hand) {
-        String force = getForcedPage(par1ItemStack);
+    public  ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand) {
+        String force = getForcedPage(playerIn.getHeldItem(hand));
         if (force != null && !force.isEmpty()) {
-            LexiconEntry entry = getEntryFromForce(par1ItemStack);
+            LexiconEntry entry = getEntryFromForce(playerIn.getHeldItem(hand));
             if (entry != null) {
                 AuraCascade.proxy.setEntryToOpen(entry);
             } else {
-                par3EntityPlayer.addChatMessage(new TextComponentString("aura.misc.cantOpen"));
+                playerIn.sendStatusMessage(new TextComponentString("aura.misc.cantOpen"), false);
             }
-            setForcedPage(par1ItemStack, "");
+            setForcedPage(playerIn.getHeldItem(hand), "");
         }
 
-        QuestManager.check(par3EntityPlayer);
+        QuestManager.check(playerIn);
 
-        AuraCascade.proxy.setLexiconStack(par1ItemStack);
-        par3EntityPlayer.openGui(AuraCascade.instance, 0, par2World, 0, 0, 0);
-        if (!par2World.isRemote && !skipSound){
+        AuraCascade.proxy.setLexiconStack(playerIn.getHeldItem(hand));
+        playerIn.openGui(AuraCascade.instance, 0, worldIn, 0, 0, 0);
+        if (!worldIn.isRemote && !skipSound){
             //TODO Fix soundat
             //par2World.playSoundAt(par3EntityPlayer, "aura:lexiconOpen", 0.5F, 1F);
         }
         skipSound = false;
-        return new ActionResult<ItemStack>(EnumActionResult.PASS, par1ItemStack);
+        return new ActionResult<ItemStack>(EnumActionResult.PASS, playerIn.getHeldItem(hand));
     }
 
     @Override
@@ -131,7 +131,7 @@ public class ItemLexicon extends Item implements ITTinkererItem {
         if (ticks > 0 && entity instanceof EntityPlayer) {
             skipSound = ticks < 5;
             if (ticks == 1)
-                onItemRightClick(stack, world, (EntityPlayer) entity, EnumHand.MAIN_HAND);
+                onItemRightClick(world,(EntityPlayer) entity, EnumHand.MAIN_HAND);
             setQueueTicks(stack, ticks - 1);
         }
     }

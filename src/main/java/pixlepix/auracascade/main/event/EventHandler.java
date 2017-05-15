@@ -57,7 +57,7 @@ public class EventHandler {
         IInventory inv = BaublesApi.getBaubles(player);
         for (int i = 0; i < 4; i++) {
             ItemStack stack = inv.getStackInSlot(i);
-            if (stack != null && clazz.isInstance(stack.getItem())) {
+            if (stack != ItemStack.EMPTY && clazz.isInstance(stack.getItem())) {
                 return stack;
             }
         }
@@ -68,7 +68,7 @@ public class EventHandler {
     @SubscribeEvent
     public void onWorldLoad(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent event) {
         EntityPlayer player = event.player;
-        if (!player.worldObj.isRemote && Config.giveBook) {
+        if (!player.world.isRemote && Config.giveBook) {
             if (!player.getEntityData().hasKey(BOOK_TAG) || !player.getEntityData().getBoolean(BOOK_TAG)) {
                 player.getEntityData().setBoolean(BOOK_TAG, true);
                 player.inventory.addItemStackToInventory(new ItemStack(BlockRegistry.getFirstItemFromClass(ItemLexicon.class)));
@@ -106,7 +106,7 @@ public class EventHandler {
 
     @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event) {
-        if (event.getEntity() instanceof EntityPlayerMP && !event.getEntity().worldObj.isRemote) {
+        if (event.getEntity() instanceof EntityPlayerMP && !event.getEntity().world.isRemote) {
             AuraCascade.proxy.networkWrapper.sendTo(new PacketSyncQuestData((EntityPlayer) event.getEntity()), (EntityPlayerMP) event.getEntity());
         }
     }
@@ -141,7 +141,7 @@ public class EventHandler {
     public void onLivingSpawn(LivingSpawnEvent.CheckSpawn event) {
         int scareCount = 0;
         for (Entity entity : scareFairies) {
-            if (entity.worldObj == event.getWorld() && entity.getDistance(event.getX(), event.getY(), event.getZ()) < 50) {
+            if (entity.world == event.getWorld() && entity.getDistance(event.getX(), event.getY(), event.getZ()) < 50) {
                 scareCount += 1;
             }
         }
@@ -156,10 +156,10 @@ public class EventHandler {
     //Amulets of protection
     @SubscribeEvent
     public void onEntityAttacked(LivingHurtEvent event) {
-        if (event.getEntity() instanceof EntityPlayer && (event.getSource() == DamageSource.lava || event.getSource() == DamageSource.onFire || event.getSource() == DamageSource.inFire)) {
+        if (event.getEntity() instanceof EntityPlayer && (event.getSource() == DamageSource.LAVA || event.getSource() == DamageSource.ON_FIRE || event.getSource() == DamageSource.IN_FIRE)) {
             ItemStack stack = getBaubleFromInv(ItemRedAmulet.class, (EntityPlayer) event.getEntity());
-            if (stack != null) {
-                if (event.getSource() != DamageSource.lava) {
+            if (stack != ItemStack.EMPTY) {
+                if (event.getSource() != DamageSource.LAVA) {
                     ((EntityPlayer) event.getEntity()).heal(event.getAmount());
                 }
                 event.setAmount(0);
@@ -167,11 +167,11 @@ public class EventHandler {
         }
         if (event.getSource() != null && event.getSource().getEntity() instanceof EntityPlayer) {
             ItemStack stack = ((EntityPlayer) event.getSource().getEntity()).inventory.getCurrentItem();
-            if (stack != null && stack.getItem() instanceof ItemComboSword) {
+            if (stack != ItemStack.EMPTY && stack.getItem() instanceof ItemComboSword) {
                 if (stack.getTagCompound() == null) {
                     stack.setTagCompound(new NBTTagCompound());
                 }
-                int timeDiff = (int) Math.abs(event.getEntity().worldObj.getTotalWorldTime() - stack.getTagCompound().getLong(ItemComboSword.NBT_TAG_LAST_TIME));
+                int timeDiff = (int) Math.abs(event.getEntity().world.getTotalWorldTime() - stack.getTagCompound().getLong(ItemComboSword.NBT_TAG_LAST_TIME));
 
                 if (timeDiff < 100 && timeDiff > 4) {
                     int combo = stack.getTagCompound().getInteger(ItemComboSword.NBT_TAG_COMBO_COUNT);
@@ -184,7 +184,7 @@ public class EventHandler {
                 } else {
                     stack.getTagCompound().setInteger(ItemComboSword.NBT_TAG_COMBO_COUNT, 0);
                 }
-                stack.getTagCompound().setLong(ItemComboSword.NBT_TAG_LAST_TIME, event.getEntity().worldObj.getTotalWorldTime());
+                stack.getTagCompound().setLong(ItemComboSword.NBT_TAG_LAST_TIME, event.getEntity().world.getTotalWorldTime());
             }
         }
         if (event.getEntity() instanceof EntityPlayer && event.getSource().isExplosion()) {
@@ -200,21 +200,21 @@ public class EventHandler {
                 event.setAmount(event.getAmount() / 2);
             }
         }
-        if (event.getEntity() instanceof EntityPlayer && event.getSource() == DamageSource.fall) {
+        if (event.getEntity() instanceof EntityPlayer && event.getSource() == DamageSource.FALL) {
             ItemStack stack = getBaubleFromInv(ItemGreenAmulet.class, (EntityPlayer) event.getEntity());
             if (stack != null) {
                 ((EntityPlayer) event.getEntity()).heal(event.getAmount());
                 event.setAmount(0);
             }
         }
-        if (event.getEntity() instanceof EntityPlayer && event.getSource() == DamageSource.drown) {
+        if (event.getEntity() instanceof EntityPlayer && event.getSource() == DamageSource.DROWN) {
             ItemStack stack = getBaubleFromInv(ItemBlueAmulet.class, (EntityPlayer) event.getEntity());
             if (stack != null) {
                 ((EntityPlayer) event.getEntity()).heal(event.getAmount());
                 event.setAmount(0);
             }
         }
-        if (event.getEntity() instanceof EntityPlayer && event.getSource() == DamageSource.wither) {
+        if (event.getEntity() instanceof EntityPlayer && event.getSource() == DamageSource.WITHER) {
             ItemStack stack = getBaubleFromInv(ItemPurpleAmulet.class, (EntityPlayer) event.getEntity());
             if (stack != null) {
                 event.setAmount(0);
@@ -225,14 +225,14 @@ public class EventHandler {
     //Sword of the Thief
     @SubscribeEvent
     public void onLivingDrops(LivingDropsEvent event) {
-        if (!event.getEntity().worldObj.isRemote && event.getSource().getSourceOfDamage() instanceof EntityPlayer) {
+        if (!event.getEntity().world.isRemote && event.getSource().getSourceOfDamage() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) event.getSource().getSourceOfDamage();
             ItemStack swordStack = player.inventory.getCurrentItem();
-            if (swordStack != null && swordStack.getItem() instanceof ItemThiefSword) {
+            if (swordStack != ItemStack.EMPTY && swordStack.getItem() instanceof ItemThiefSword) {
                 if (event.getEntity() instanceof EntityVillager && new Random().nextInt(4) == 0) {
                     EntityVillager villager = (EntityVillager) event.getEntity();
                     ItemStack dropStack = villager.getRecipes(player).get(0).getItemToSell();
-                    EntityItem entityItem = new EntityItem(player.worldObj, event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ, dropStack);
+                    EntityItem entityItem = new EntityItem(player.world, event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ, dropStack);
                     event.getDrops().add(entityItem);
                 }
             }
@@ -244,8 +244,8 @@ public class EventHandler {
     @SubscribeEvent
     public void onGetBreakSpeed(PlayerEvent.BreakSpeed event) {
         ItemStack item = BaublesApi.getBaubles(event.getEntityPlayer()).getStackInSlot(1);
-        if (item != null && item.getItem() instanceof ItemFairyRing && !event.getEntityPlayer().worldObj.isRemote) {
-            List<EntityDigFairy> fairyList = event.getEntityPlayer().worldObj.getEntitiesWithinAABB(EntityDigFairy.class, event.getEntityPlayer().getEntityBoundingBox().expand(20, 20, 20));
+        if (item != ItemStack.EMPTY && item.getItem() instanceof ItemFairyRing && !event.getEntityPlayer().world.isRemote) {
+            List<EntityDigFairy> fairyList = event.getEntityPlayer().world.getEntitiesWithinAABB(EntityDigFairy.class, event.getEntityPlayer().getEntityBoundingBox().expand(20, 20, 20));
             int count = -1;
             for (EntityDigFairy digFairy : fairyList) {
                 if (digFairy.player == event.getEntityPlayer()) {
@@ -255,12 +255,12 @@ public class EventHandler {
             count = Math.min(count, 15);
             event.setNewSpeed((float) (event.getNewSpeed() * Math.pow(1.08, count)));
         }
-        if (event.getEntityPlayer().inventory.getCurrentItem() != null && AngelsteelToolHelper.isAngelsteelTool(event.getEntityPlayer().inventory.getCurrentItem().getItem())) {
+        if (event.getEntityPlayer().inventory.getCurrentItem() != ItemStack.EMPTY && AngelsteelToolHelper.isAngelsteelTool(event.getEntityPlayer().inventory.getCurrentItem().getItem())) {
             if (event.getEntityPlayer().inventory.getCurrentItem().getTagCompound() == null) {
                 event.getEntityPlayer().inventory.getCurrentItem().setTagCompound(AngelsteelToolHelper.getRandomBuffCompound(((IAngelsteelTool) event.getEntityPlayer().inventory.getCurrentItem().getItem()).getDegree()));
             }
             ItemStack tool = event.getEntityPlayer().inventory.getCurrentItem();
-            if (ForgeHooks.canToolHarvestBlock(event.getEntityPlayer().worldObj, event.getPos(), tool)) {
+            if (ForgeHooks.canToolHarvestBlock(event.getEntityPlayer().world, event.getPos(), tool)) {
                 int[] buffs = AngelsteelToolHelper.readFromNBT(event.getEntityPlayer().inventory.getCurrentItem().getTagCompound());
                 if (buffs.length > 0) {
                     int efficiency = buffs[0];
@@ -269,10 +269,10 @@ public class EventHandler {
                     int disintegrate = buffs[3];
                     //1.5F, the hardness of stone, is used as a dividing point
                     //Stone is not affected by either enchant
-                    if (event.getState().getBlock().getBlockHardness(event.getState(), event.getEntity().worldObj, event.getPos()) <= 1F) {
+                    if (event.getState().getBlock().getBlockHardness(event.getState(), event.getEntity().world, event.getPos()) <= 1F) {
                         event.setNewSpeed((float) (event.getNewSpeed() * Math.pow(3, disintegrate)));
                     }
-                    if (event.getState().getBlock().getBlockHardness(event.getState(), event.getEntity().worldObj, event.getPos()) >= 2F) {
+                    if (event.getState().getBlock().getBlockHardness(event.getState(), event.getEntity().world, event.getPos()) >= 2F) {
 
                         event.setNewSpeed((float) (event.getNewSpeed() * Math.pow(3, shatter)));
                     }
@@ -285,7 +285,7 @@ public class EventHandler {
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onHarvestEvent(BlockEvent.HarvestDropsEvent event) {
 
-        if (event.getHarvester() != null && event.getHarvester().inventory.getCurrentItem() != null && AngelsteelToolHelper.isAngelsteelTool(event.getHarvester().inventory.getCurrentItem().getItem())) {
+        if (event.getHarvester() != null && event.getHarvester().inventory.getCurrentItem() != ItemStack.EMPTY && AngelsteelToolHelper.isAngelsteelTool(event.getHarvester().inventory.getCurrentItem().getItem())) {
             if (event.getHarvester().inventory.getCurrentItem().getTagCompound() == null) {
                 event.getHarvester().inventory.getCurrentItem().setTagCompound(AngelsteelToolHelper.getRandomBuffCompound(((IAngelsteelTool) event.getHarvester().inventory.getCurrentItem().getItem()).getDegree()));
             }
@@ -308,8 +308,8 @@ public class EventHandler {
         if (event.getEntityLiving() instanceof EntityPlayer) {
             EntityPlayer entityPlayer = (EntityPlayer) event.getEntityLiving();
             ItemStack item = BaublesApi.getBaubles(entityPlayer).getStackInSlot(1);
-            if (item != null && item.getItem() instanceof ItemFairyRing && !entityPlayer.worldObj.isRemote) {
-                List<EntityFallFairy> fairyList = entityPlayer.worldObj.getEntitiesWithinAABB(EntityFallFairy.class, entityPlayer.getEntityBoundingBox().expand(20, 20, 20));
+            if (item != ItemStack.EMPTY && item.getItem() instanceof ItemFairyRing && !entityPlayer.world.isRemote) {
+                List<EntityFallFairy> fairyList = entityPlayer.world.getEntitiesWithinAABB(EntityFallFairy.class, entityPlayer.getEntityBoundingBox().expand(20, 20, 20));
                 int count = 0;
                 for (EntityFallFairy fairy : fairyList) {
                     if (fairy.player == entityPlayer) {
@@ -324,8 +324,8 @@ public class EventHandler {
         BlockPos pos = new BlockPos(event.getEntity());
 
         for (BlockPos searchPump : PosUtil.inRange(pos, 3)) {
-            if (event.getEntity().worldObj.getTileEntity(searchPump) instanceof AuraTilePumpFall) {
-                ((AuraTilePumpFall) event.getEntity().worldObj.getTileEntity(searchPump)).onFall(event);
+            if (event.getEntity().world.getTileEntity(searchPump) instanceof AuraTilePumpFall) {
+                ((AuraTilePumpFall) event.getEntity().world.getTileEntity(searchPump)).onFall(event);
                 break;
             }
         }
@@ -335,7 +335,7 @@ public class EventHandler {
     @SubscribeEvent
     public void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntityLiving() instanceof EntityPlayer) {
-            if (!((EntityPlayer) event.getEntityLiving()).worldObj.getGameRules().getBoolean("keepInventory")) {
+            if (!((EntityPlayer) event.getEntityLiving()).world.getGameRules().getBoolean("keepInventory")) {
 
                 EntityPlayer entityPlayer = (EntityPlayer) event.getEntityLiving();
                 ItemStack item = getBaubleFromInv(ItemFairyRing.class, entityPlayer);
@@ -350,7 +350,7 @@ public class EventHandler {
     @SubscribeEvent
     public void onPlayerLogout(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent event) {
         ItemStack item = getBaubleFromInv(ItemFairyRing.class, event.player);
-        if (item != null && item.getItem() instanceof ItemFairyRing && !event.player.worldObj.isRemote) {
+        if (item != null && item.getItem() instanceof ItemFairyRing && !event.player.world.isRemote) {
             ItemFairyRing.killNearby(event.player);
         }
 
@@ -360,7 +360,7 @@ public class EventHandler {
     @SubscribeEvent
     public void onPlayerLogin(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent event) {
         ItemStack item = getBaubleFromInv(ItemFairyRing.class, event.player);
-        if (item != null && item.getItem() instanceof ItemFairyRing && !event.player.worldObj.isRemote) {
+        if (item != null && item.getItem() instanceof ItemFairyRing && !event.player.world.isRemote) {
             ItemFairyRing.makeFaries(item, event.player);
         }
 
@@ -373,7 +373,7 @@ public class EventHandler {
 	        ItemStack heldStack = player.inventory.getCurrentItem();
 	        if (getBaubleFromInv(ItemFoodAmulet.class, player) != null) {
 	            //Check if item is food
-	            if (!player.worldObj.isRemote && heldStack != null && (heldStack.getItem().getItemUseAction(heldStack) == EnumAction.EAT || heldStack.getItem().getItemUseAction(heldStack) == EnumAction.DRINK)) {
+	            if (!player.world.isRemote && heldStack != ItemStack.EMPTY && (heldStack.getItem().getItemUseAction(heldStack) == EnumAction.EAT || heldStack.getItem().getItemUseAction(heldStack) == EnumAction.DRINK)) {
 	                if (heldStack.getItem().getUnlocalizedName().equals("item.apple")) {
 	                    player.addPotionEffect(new PotionEffect(MobEffects.WITHER, 6 * 60 * 20, 1));
 	                } else {

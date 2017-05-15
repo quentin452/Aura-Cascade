@@ -78,7 +78,7 @@ public class AuraTilePedestal extends AuraTile implements IInventory {
     @Override
     protected void readCustomNBT(NBTTagCompound nbt) {
         super.readCustomNBT(nbt);
-        itemStack = ItemStack.loadItemStackFromNBT(nbt.getCompoundTag("itemStack"));
+        itemStack = new ItemStack(nbt.getCompoundTag("itemStack"));
         direction = nbt.getInteger("direction") == -1 ? null : EnumFacing.getFront(nbt.getInteger("direction"));
         powerReceived = nbt.getInteger("powerReceived");
     }
@@ -99,6 +99,11 @@ public class AuraTilePedestal extends AuraTile implements IInventory {
     @Override
     public int getSizeInventory() {
         return 1;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
     }
 
     @Override
@@ -154,8 +159,8 @@ public class AuraTilePedestal extends AuraTile implements IInventory {
     }
 
     @Override
-    public boolean isUseableByPlayer(EntityPlayer p_70300_1_) {
-        return true;
+    public boolean isUsableByPlayer(EntityPlayer player) {
+        return false;
     }
 
     @Override

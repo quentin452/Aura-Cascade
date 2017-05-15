@@ -38,7 +38,7 @@ public class PageTutorial extends PageText {
         if (button == this.button) {
             GuiLexicon.startTutorial();
             getMinecraft().displayGuiScreen(new GuiLexicon());
-            getMinecraft().thePlayer.addChatMessage(new TextComponentString("aura.tutorialStarted"));
+            getMinecraft().player.sendChatMessage(String.valueOf(new TextComponentString("aura.tutorialStarted")));
         }
     }
 

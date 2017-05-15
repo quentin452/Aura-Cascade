@@ -73,10 +73,10 @@ public class EnchanterTile extends ConsumerTile {
                                 enchantMap.put(Enchantment.getEnchantmentID(enchant), level + 1);
                                 EnchantmentHelper.setEnchantments(enchantMap, toolStack);
                             }
-                            ingotStack.stackSize--;
+                            ingotStack.shrink(1);
                             AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, item.posX, item.posY, item.posZ), new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 32));
 
-                            if (ingotStack.stackSize <= 0) {
+                            if (ingotStack.getCount() <= 0) {
                                 ingot.setDead();
                             }
                             return;

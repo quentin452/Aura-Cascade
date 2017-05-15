@@ -2,6 +2,7 @@ package pixlepix.auracascade.block.entity;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -58,7 +59,8 @@ public class EntityMinerExplosion extends Entity {
                 //this.world.spawnParticle("hugeexplosion", posX, posY, posZ, 0.0D, 0.0D, 0.0D);
             }
         }
-        moveEntity(motionX, motionY, motionZ);
+
+        move(MoverType.SELF,motionX, motionY, motionZ);
         if (world.isRemote && world.getTotalWorldTime() % 2 == 0) {
             this.world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, posX, posY, posZ, 0.0D, 0.0D, 0.0D);
         }

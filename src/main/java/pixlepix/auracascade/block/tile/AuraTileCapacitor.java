@@ -53,7 +53,8 @@ public class AuraTileCapacitor extends AuraTile {
                 ticksDisabled = 410;
 
                 world.setBlockState(getPos(), world.getBlockState(getPos()).withProperty(AuraBlockCapacitor.BURSTING, false), 3);
-                world.notifyBlockOfStateChange(pos, world.getBlockState(pos).getBlock());
+                //world.notifyBlockOfStateChange(pos, world.getBlockState(pos).getBlock());
+                markDirty();
             }
         }
     }

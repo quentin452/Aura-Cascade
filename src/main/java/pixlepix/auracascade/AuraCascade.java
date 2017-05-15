@@ -14,7 +14,7 @@ import pixlepix.auracascade.compat.IMCManager;
 import pixlepix.auracascade.main.CommonProxy;
 import pixlepix.auracascade.main.ConstantMod;
 
-@Mod(modid = ConstantMod.modId, name = ConstantMod.modName, version = ConstantMod.version, dependencies = "required-after:Baubles", acceptedMinecraftVersions = "[1.10.2]")
+@Mod(modid = ConstantMod.modId, name = ConstantMod.modName, version = ConstantMod.version, dependencies = "required-after:baubles", acceptedMinecraftVersions = "[1.11.2]")
 public class AuraCascade {
 
   //  public static SimpleAnalytics analytics;

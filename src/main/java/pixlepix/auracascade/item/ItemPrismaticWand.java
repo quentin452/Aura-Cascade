@@ -39,15 +39,15 @@ public class ItemPrismaticWand extends Item implements ITTinkererItem {
     }
 
     @Override
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         //More specific selections
         if (!player.isSneaking() && !world.isRemote) {
-            if (stack.getTagCompound() == null) {
-                stack.setTagCompound(new NBTTagCompound());
+            if (player.getHeldItem(hand).getTagCompound() == null) {
+                player.getHeldItem(hand).setTagCompound(new NBTTagCompound());
             }
 
-            NBTTagCompound nbt = stack.getTagCompound();
-            if (stack.getItemDamage() == 0) {
+            NBTTagCompound nbt = player.getHeldItem(hand).getTagCompound();
+            if (player.getHeldItem(hand).getItemDamage() == 0) {
                 if (nbt.hasKey("x1")) {
                     nbt.setInteger("x2", nbt.getInteger("x1"));
                     nbt.setInteger("y2", nbt.getInteger("y1"));
@@ -56,7 +56,7 @@ public class ItemPrismaticWand extends Item implements ITTinkererItem {
                 nbt.setInteger("x1", pos.getX());
                 nbt.setInteger("y1", pos.getY());
                 nbt.setInteger("z1", pos.getZ());
-                player.addChatComponentMessage(new TextComponentString("Position set"));
+                player.sendStatusMessage(new TextComponentString("Position set"), false);
                 return EnumActionResult.PASS;
             }
         }
@@ -71,22 +71,22 @@ public class ItemPrismaticWand extends Item implements ITTinkererItem {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand){
-        int mode = stack.getItemDamage();
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand){
+        int mode = player.getHeldItem(hand).getItemDamage();
         if (player.isSneaking()) {
-            NBTTagCompound nbt = stack.getTagCompound();
+            NBTTagCompound nbt = player.getHeldItem(hand).getTagCompound();
             mode++;
             mode = mode % modes.length;
-            stack.setItemDamage(mode);
-            stack.setTagCompound(nbt);
+            player.getHeldItem(hand).setItemDamage(mode);
+            player.getHeldItem(hand).setTagCompound(nbt);
             if (!world.isRemote) {
-                player.addChatComponentMessage(new TextComponentString("Switched to: " + modes[mode]));
+                player.sendStatusMessage(new TextComponentString("Switched to: " + modes[mode]), false);
             }
         } else {
-            if (stack.getTagCompound() == null) {
-                stack.setTagCompound(new NBTTagCompound());
+            if (player.getHeldItem(hand).getTagCompound() == null) {
+                player.getHeldItem(hand).setTagCompound(new NBTTagCompound());
             }
-            NBTTagCompound nbt = stack.getTagCompound();
+            NBTTagCompound nbt = player.getHeldItem(hand).getTagCompound();
             switch (mode) {
                 case 1:
                     if (nbt.hasKey("x1") && nbt.hasKey("x2")) {
@@ -103,12 +103,12 @@ public class ItemPrismaticWand extends Item implements ITTinkererItem {
                         nbt.setInteger("czo", nbt.getInteger("z1") - roundToZero(player.posZ));
 
                         if (!world.isRemote) {
-                            player.addChatComponentMessage(new TextComponentString("Copied to clipboard"));
+                            player.sendStatusMessage(new TextComponentString("Copied to clipboard"), false);
                         }
                     } else {
 
                         if (!world.isRemote) {
-                            player.addChatComponentMessage(new TextComponentString("Invalid selection"));
+                            player.sendStatusMessage(new TextComponentString("Invalid selection"), false);
                         }
                     }
                     break;
@@ -227,11 +227,11 @@ public class ItemPrismaticWand extends Item implements ITTinkererItem {
                         } while (xi <= cx2);
 
                         if (!world.isRemote) {
-                            player.addChatComponentMessage(new TextComponentString("Successfully pasted building"));
+                            player.sendStatusMessage(new TextComponentString("Successfully pasted building"), false);
                         }
                     } else {
                         if (!world.isRemote) {
-                            player.addChatComponentMessage(new TextComponentString("Nothing copied"));
+                            player.sendStatusMessage(new TextComponentString("Nothing copied"), false);
                         }
 
                     }
@@ -240,7 +240,7 @@ public class ItemPrismaticWand extends Item implements ITTinkererItem {
 
             }
         }
-        return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
+        return new ActionResult<ItemStack>(EnumActionResult.PASS, player.getHeldItem(hand));
     }
 
     public int roundToZero(double d) {
@@ -265,8 +265,8 @@ public class ItemPrismaticWand extends Item implements ITTinkererItem {
     public int slotOfItemStack(ItemStack stack, InventoryPlayer inv) {
         int i;
 
-        for (i = 0; i < inv.mainInventory.length; ++i) {
-            if (inv.mainInventory[i] != null && inv.mainInventory[i].isItemEqual(stack)) {
+        for (i = 0; i < inv.mainInventory.size(); ++i) {
+            if (inv.mainInventory.get(i) != ItemStack.EMPTY && inv.mainInventory.get(i).isItemEqual(stack)) {
                 return i;
             }
         }

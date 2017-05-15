@@ -5,6 +5,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import pixlepix.auracascade.item.ItemAuraCrystal;
 import pixlepix.auracascade.main.ConstantMod;
 
@@ -29,18 +30,18 @@ public class ModCreativeTab extends CreativeTabs {
     }
 
     @Override
-    public Item getTabIconItem() {
-        return Items.STICK;
+    public ItemStack getTabIconItem() {
+        return Items.STICK.getDefaultInstance();
     }
 
     @Override
-    public void displayAllRelevantItems(List<ItemStack> list) {
+    public void displayAllRelevantItems(NonNullList<ItemStack> list) {
         list.addAll(this.list);
     }
 
     public void addItem(Item item) {
-
-        item.getSubItems(item, this, creativeTabQueue);
+        //item.getSubItems(item, this, creativeTabQueue);
+        creativeTabQueue.add(new ItemStack(item));
         item.setCreativeTab(this);
     }
 

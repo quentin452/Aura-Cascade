@@ -4,6 +4,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -39,10 +40,10 @@ public class ItemAngelsteelIngot extends Item implements ITTinkererItem, ISpecia
             targetStacks[0] = entityItem;
             int i = 1;
 
-            if (entityItem.getEntityItem().stackSize == 2) {
+            if (entityItem.getEntityItem().getCount() == 2) {
                 targetStacks[1] = entityItem;
                 i = 2;
-            } else if (entityItem.getEntityItem().stackSize >= 3) {
+            } else if (entityItem.getEntityItem().getCount() >= 3) {
                 targetStacks[1] = entityItem;
                 targetStacks[2] = entityItem;
                 i = 3;
@@ -60,7 +61,7 @@ public class ItemAngelsteelIngot extends Item implements ITTinkererItem, ISpecia
                         targetStacks[i] = nearbyItem;
                         i += 1;
 
-                        if (nearbyStack.stackSize >= 2 && i < 3) {
+                        if (nearbyStack.getCount() >= 2 && i < 3) {
                             targetStacks[i] = nearbyItem;
                             i += 1;
                         }
@@ -76,7 +77,7 @@ public class ItemAngelsteelIngot extends Item implements ITTinkererItem, ISpecia
 
             if (i == 3) {
                 for (EntityItem item : targetStacks) {
-                    item.getEntityItem().stackSize--;
+                    item.getEntityItem().shrink(1);
                 }
                 EntityItem item = new EntityItem(entityItem.world, entityItem.posX, entityItem.posY, entityItem.posZ, new ItemStack(this, 1, degree + 1));
                 entityItem.world.spawnEntity(item);
@@ -117,7 +118,7 @@ public class ItemAngelsteelIngot extends Item implements ITTinkererItem, ISpecia
     }
 
     @Override
-    public void getSubItems(Item item, CreativeTabs tab, List<ItemStack> list) {
+    public void getSubItems(Item item, CreativeTabs tab, NonNullList<ItemStack> list) {
         for (int i = 0; i < AngelsteelToolHelper.MAX_DEGREE; i++) {
             list.add(new ItemStack(item, 1, i));
         }

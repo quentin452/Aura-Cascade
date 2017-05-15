@@ -36,6 +36,6 @@ public class PotionYellowCurse extends Potion {
 
     @Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
-        entity.worldObj.addWeatherEffect(new EntityLightningBolt(entity.worldObj, entity.posX, entity.posY, entity.posZ, false));
+        entity.world.addWeatherEffect(new EntityLightningBolt(entity.world, entity.posX, entity.posY, entity.posZ, false));
     }
 }

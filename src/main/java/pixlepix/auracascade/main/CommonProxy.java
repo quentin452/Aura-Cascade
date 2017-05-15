@@ -5,6 +5,7 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.MapGenStructureIO;
@@ -102,8 +103,8 @@ public class CommonProxy {
         EnchantmentManager.init();
         eventHandlerEnch = new EnchantEventHandler();
         MinecraftForge.EVENT_BUS.register(eventHandlerEnch);
-        EntityRegistry.registerModEntity(EntityFairy.class, "Fairy", 0, AuraCascade.instance, 50, 250, true);
-        EntityRegistry.registerModEntity(EntityMinerExplosion.class, "ExplosionMiner", 1, AuraCascade.instance, 50, 40, true);
+        EntityRegistry.registerModEntity(new ResourceLocation(ConstantMod.modId), EntityFairy.class, "Fairy", 0, AuraCascade.instance, 50, 250, true);
+        EntityRegistry.registerModEntity(new ResourceLocation(ConstantMod.modId), EntityMinerExplosion.class, "ExplosionMiner", 1, AuraCascade.instance, 50, 40, true);
         QuestManager.init();
     }
 

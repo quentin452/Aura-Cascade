@@ -27,10 +27,10 @@ public class ParticleSphere extends Particle {
         this.particleRed = this.particleGreen = this.particleBlue = (float) (Math.random() * 0.30000001192092896D + 0.6000000238418579D);
         this.particleScale *= 0.75F;
         this.particleMaxAge = (int) (6.0D / (Math.random() * 0.8D + 0.6D));
-        this.isCollided = false;
+        this.onGround = false;
 
         this.particleMaxAge = 20;
-        this.isCollided = false;
+        this.onGround = false;
     }
 
 

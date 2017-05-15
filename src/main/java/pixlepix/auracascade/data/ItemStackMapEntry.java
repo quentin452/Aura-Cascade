@@ -16,15 +16,15 @@ public class ItemStackMapEntry {
 
     @Override
     public int hashCode() {
-        if (stack == null || stack.getItem() == null) {
+        if (stack == ItemStack.EMPTY || stack.getItem() == ItemStack.EMPTY.getItem()) {
             return -43532987;
 
         }
-        return stack.getItem().getUnlocalizedName().hashCode() * -2134 + stack.stackSize * 3245879 + stack.getItemDamage() * -234569 + (stack.getTagCompound() != null ? stack.getTagCompound().hashCode() * 2345798 : 0);
+        return stack.getItem().getUnlocalizedName().hashCode() * -2134 + stack.getCount() * 3245879 + stack.getItemDamage() * -234569 + (stack.getTagCompound() != null ? stack.getTagCompound().hashCode() * 2345798 : 0);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof ItemStackMapEntry && ((stack == null && ((ItemStackMapEntry) obj).stack == null) || ((ItemStackMapEntry) obj).stack.isItemEqual(stack));
+        return obj instanceof ItemStackMapEntry && ((stack == ItemStack.EMPTY && ((ItemStackMapEntry) obj).stack == ItemStack.EMPTY) || ((ItemStackMapEntry) obj).stack.isItemEqual(stack));
     }
 }

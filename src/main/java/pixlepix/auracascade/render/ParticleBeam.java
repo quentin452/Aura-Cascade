@@ -32,7 +32,8 @@ public class ParticleBeam extends Particle {
 
         this.particleScale *= 2F;
         this.particleMaxAge = (int) (6.0D / (Math.random() * 0.8D + 0.6D));
-        this.isCollided = false;
+        //this.isCollided = false;
+        this.onGround = false;
         this.isExpired = false;
     }
 }

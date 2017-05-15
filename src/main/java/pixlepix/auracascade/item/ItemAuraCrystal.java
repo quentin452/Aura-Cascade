@@ -1,8 +1,6 @@
 package pixlepix.auracascade.item;
 
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -13,10 +11,11 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import pixlepix.auracascade.block.tile.AuraTile;
-import pixlepix.auracascade.registry.*;
+import pixlepix.auracascade.registry.ITTinkererItem;
+import pixlepix.auracascade.registry.OreCraftingBenchRecipe;
+import pixlepix.auracascade.registry.ThaumicTinkererRecipe;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by pixlepix on 11/29/14.
@@ -26,10 +25,10 @@ public class ItemAuraCrystal extends Item implements ITTinkererItem {
     public static final String name = "whiteCrystal";
 
     @Override
-    public EnumActionResult onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand){
+    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand){
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof AuraTile) {
-            stack.stackSize--;
+            player.getHeldItem(hand).shrink(1);
             ((AuraTile) te).storage += 1000;
         }
         //Changing anything to fail literally breaks all of it.

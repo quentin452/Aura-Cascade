@@ -28,9 +28,9 @@ public class EntityItemPoof extends ParticleFirework.Spark {
 
         this.setParticleTextureIndex(160 + (7 - this.particleAge * 8 / this.particleMaxAge));
         this.motionX -= 0.004D;
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
+        this.move(this.motionX, this.motionY, this.motionZ);
 
-        if (this.isCollided) {
+        if (this.onGround) {
             this.motionX *= 0.699999988079071D;
             this.motionZ *= 0.699999988079071D;
         }

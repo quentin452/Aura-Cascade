@@ -40,7 +40,7 @@ public class AuraUtil {
                             if (itemStack1.hasTagCompound() && itemStack2.hasTagCompound()) {
 // Then sort on stack size
                                 if (ItemStack.areItemStackTagsEqual(itemStack1, itemStack2)) {
-                                    return (itemStack1.stackSize - itemStack2.stackSize);
+                                    return (itemStack1.getCount() - itemStack2.getCount());
                                 } else {
                                     return (itemStack1.getTagCompound().hashCode() - itemStack2.getTagCompound().hashCode());
                                 }
@@ -49,7 +49,7 @@ public class AuraUtil {
                             } else if (itemStack1.hasTagCompound() && !(itemStack2.hasTagCompound())) {
                                 return 1;
                             } else {
-                                return (itemStack1.stackSize - itemStack2.stackSize);
+                                return (itemStack1.getCount() - itemStack2.getCount());
                             }
                         } else {
                             return (itemStack1.getItemDamage() - itemStack2.getItemDamage());
@@ -105,30 +105,30 @@ public class AuraUtil {
         }
     }
 
-    public static void respawnItemWithParticles(World worldObj, EntityItem oldItem, ItemStack stack) {
-        EntityItem newEntity = new EntityItem(worldObj, oldItem.posX, oldItem.posY, oldItem.posZ, stack);
+    public static void respawnItemWithParticles(World world, EntityItem oldItem, ItemStack stack) {
+        EntityItem newEntity = new EntityItem(world, oldItem.posX, oldItem.posY, oldItem.posZ, stack);
 
         setItemDelay(newEntity, getItemDelay(oldItem));
         newEntity.motionX = oldItem.motionX;
         newEntity.motionY = oldItem.motionY;
         newEntity.motionZ = oldItem.motionZ;
 
-        worldObj.spawnEntity(newEntity);
+        world.spawnEntity(newEntity);
 
-        AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, newEntity.posX, newEntity.posY, newEntity.posZ), new NetworkRegistry.TargetPoint(worldObj.provider.getDimension(), (int) oldItem.posX, (int) oldItem.posY, (int) oldItem.posZ, 32));
+        AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, newEntity.posX, newEntity.posY, newEntity.posZ), new NetworkRegistry.TargetPoint(world.provider.getDimension(), (int) oldItem.posX, (int) oldItem.posY, (int) oldItem.posZ, 32));
 
 
     }
 
     public static ItemStack decrStackSize(IInventory tile, int slot, int amt) {
         ItemStack stack = tile.getStackInSlot(slot);
-        if (stack != null) {
-            if (stack.stackSize <= amt) {
-                tile.setInventorySlotContents(slot, null);
+        if (stack != ItemStack.EMPTY) {
+            if (stack.getCount() <= amt) {
+                tile.setInventorySlotContents(slot, ItemStack.EMPTY);
             } else {
                 stack = stack.splitStack(amt);
-                if (stack.stackSize == 0) {
-                    tile.setInventorySlotContents(slot, null);
+                if (stack.getCount() == 0) {
+                    tile.setInventorySlotContents(slot, ItemStack.EMPTY);
                 }
             }
         }
@@ -159,9 +159,9 @@ public class AuraUtil {
             EnumFacing connectingDirection = e.rotateYCCW();
             BlockPos corner = centerPos.offset(e, 5);
             BlockPos connectingCorner = centerPos.offset(connectingDirection, 5);
-            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(corner, centerPos, particle, 1, .4, .4), new NetworkRegistry.TargetPoint(entity.worldObj.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
-            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(corner, connectingCorner, particle, 1, .4, .4), new NetworkRegistry.TargetPoint(entity.worldObj.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
-            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(corner, topPos, particle, 1, .4, .4), new NetworkRegistry.TargetPoint(entity.worldObj.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
+            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(corner, centerPos, particle, 1, .4, .4), new NetworkRegistry.TargetPoint(entity.world.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
+            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(corner, connectingCorner, particle, 1, .4, .4), new NetworkRegistry.TargetPoint(entity.world.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
+            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(corner, topPos, particle, 1, .4, .4), new NetworkRegistry.TargetPoint(entity.world.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
 
         }
     }
