@@ -105,11 +105,8 @@ public class AuraBlock extends Block implements IToolTip, ITTinkererBlock, ITile
     public String getHarvestTool(IBlockState state) {
         return "pickaxe";
     }
-    @Override
-    public boolean isVisuallyOpaque()
-    {
-        return false;
-    }
+
+
     @Override
     public boolean isBlockNormalCube(IBlockState state)
     {
@@ -156,7 +153,7 @@ public class AuraBlock extends Block implements IToolTip, ITTinkererBlock, ITile
                 //Remove current itemstack from pedestal
                 if (pedestal.itemStack != null) {
                     EntityItem item = new EntityItem(world, player.posX, player.posY, player.posZ, pedestal.itemStack);
-                    world.spawnEntityInWorld(item);
+                    world.spawnEntity(item);
                 }
 
                 pedestal.itemStack = player.inventory.getCurrentItem() != null ? player.inventory.decrStackSize(player.inventory.currentItem, 1) : null;
@@ -191,6 +188,7 @@ public class AuraBlock extends Block implements IToolTip, ITTinkererBlock, ITile
                 }
             } else {
                 player.addChatComponentMessage(new TextComponentString("No Recipe Selected"));
+
             }
             return true;
         }
@@ -238,7 +236,8 @@ public class AuraBlock extends Block implements IToolTip, ITTinkererBlock, ITile
                     double d2 = AuraUtil.getDropOffset(world);
                     EntityItem entityitem = new EntityItem(world, (double) pos.getX() + d0, (double) pos.getY() + d1, (double) pos.getZ() + d2, inv.getStackInSlot(i));
                     AuraUtil.setItemDelay(entityitem, 10);
-                    world.spawnEntityInWorld(entityitem);
+                    world.spawnEntity(entityitem);
+
                 }
             }
         }

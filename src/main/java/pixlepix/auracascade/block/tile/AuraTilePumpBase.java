@@ -49,7 +49,7 @@ public class AuraTilePumpBase extends AuraTile {
 
             }
         }
-        AuraUtil.updateMonitor(worldObj, getPos());
+        AuraUtil.updateMonitor(world, getPos());
     }
 
 
@@ -57,11 +57,11 @@ public class AuraTilePumpBase extends AuraTile {
     @Override
     public void update() {
         super.update();
-        if (!worldObj.isRemote && worldObj.getTotalWorldTime() % 20 == 2 && worldObj.isBlockIndirectlyGettingPowered(getPos()) == 0) {
+        if (!world.isRemote && world.getTotalWorldTime() % 20 == 2 && world.isBlockIndirectlyGettingPowered(getPos()) == 0) {
             if (pumpPower > 0) {
                 AuraTile upNode = null;
                 for (int i = 1; i < 16; i++) {
-                    TileEntity te = worldObj.getTileEntity(getPos().up(i));
+                    TileEntity te = world.getTileEntity(getPos().up(i));
                     if (te instanceof AuraTile && isOpenPath(getPos().up(i))) {
                         upNode = (AuraTile) te;
                         break;
@@ -71,7 +71,7 @@ public class AuraTilePumpBase extends AuraTile {
 
                     pumpPower--;
                     if (pumpPower == 0) {
-                        AuraUtil.updateMonitor(worldObj, getPos());
+                        AuraUtil.updateMonitor(world, getPos());
 
                     }
                     int dist = upNode.getPos().getY() - getPos().getY();
@@ -92,7 +92,7 @@ public class AuraTilePumpBase extends AuraTile {
     }
 
     public float getAlternatingFactor() {
-        return (float) (1 + Math.sin(Math.PI * worldObj.getTotalWorldTime() / 10000)) / 2;
+        return (float) (1 + Math.sin(Math.PI * world.getTotalWorldTime() / 10000)) / 2;
 
     }
 }
