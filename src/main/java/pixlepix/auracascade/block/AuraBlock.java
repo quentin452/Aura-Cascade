@@ -41,6 +41,8 @@ import pixlepix.auracascade.registry.ThaumicTinkererRecipe;
 import java.util.ArrayList;
 import java.util.List;
 
+import static sun.audio.AudioPlayer.player;
+
 public class AuraBlock extends Block implements IToolTip, ITTinkererBlock, ITileEntityProvider {
 
     public static String name = "auraNode";
@@ -138,56 +140,56 @@ public class AuraBlock extends Block implements IToolTip, ITTinkererBlock, ITile
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ){
         if (!world.isRemote && world.getTileEntity(pos) instanceof AuraTile) {
 
             if (world.getTileEntity(pos) instanceof AuraTileCapacitor && player.isSneaking()) {
                 AuraTileCapacitor capacitor = (AuraTileCapacitor) world.getTileEntity(pos);
                 capacitor.storageValueIndex = (capacitor.storageValueIndex + 1) % capacitor.storageValues.length;
-                player.addChatComponentMessage(new TextComponentString("Max Storage: " + capacitor.storageValues[capacitor.storageValueIndex]));
+                player.sendStatusMessage(new TextComponentString("Max Storage: " + capacitor.storageValues[capacitor.storageValueIndex]), false);
                 world.markBlocksDirtyVertical(pos.getX(), pos.getZ(), pos.getX(), pos.getZ());
                 return true;
             } else if (world.getTileEntity(pos) instanceof AuraTilePedestal && !player.isSneaking()) {
                 AuraTilePedestal pedestal = (AuraTilePedestal) world.getTileEntity(pos);
 
                 //Remove current itemstack from pedestal
-                if (pedestal.itemStack != null) {
+                if (pedestal.itemStack != ItemStack.EMPTY) {
                     EntityItem item = new EntityItem(world, player.posX, player.posY, player.posZ, pedestal.itemStack);
                     world.spawnEntity(item);
                 }
 
-                pedestal.itemStack = player.inventory.getCurrentItem() != null ? player.inventory.decrStackSize(player.inventory.currentItem, 1) : null;
+                pedestal.itemStack = player.inventory.getCurrentItem() != ItemStack.EMPTY ? player.inventory.decrStackSize(player.inventory.currentItem, 1) : null;
                 world.markBlocksDirtyVertical(pos.getX(), pos.getZ(), pos.getX(), pos.getZ());
                 world.notifyBlockOfStateChange(pos, this);
                 return true;
 
-            } else if (world.getTileEntity(pos) instanceof AuraTile && player.inventory.getCurrentItem() == null) {
-                player.addChatComponentMessage(new TextComponentString("Aura:"));
+            } else if (world.getTileEntity(pos) instanceof AuraTile && player.inventory.getCurrentItem() == ItemStack.EMPTY) {
+                player.sendStatusMessage(new TextComponentString("Aura:"), false);
                 if (((AuraTile) world.getTileEntity(pos)).storage != 0) {
-                    player.addChatComponentMessage(new TextComponentString("Aura: " + ((AuraTile) world.getTileEntity(pos)).storage));
+                    player.sendStatusMessage(new TextComponentString("Aura: " + ((AuraTile) world.getTileEntity(pos)).storage), false);
 
                 }
 
                 if (world.getTileEntity(pos) instanceof AuraTilePumpBase) {
 
-                    player.addChatComponentMessage(new TextComponentString("Power: " + ((AuraTilePumpBase) world.getTileEntity(pos)).pumpPower));
+                    player.sendStatusMessage(new TextComponentString("Power: " + ((AuraTilePumpBase) world.getTileEntity(pos)).pumpPower), false);
                 }
                 return true;
             }
-        } else if (!world.isRemote && world.getTileEntity(pos) instanceof CraftingCenterTile && player.inventory.getCurrentItem() == null) {
+        } else if (!world.isRemote && world.getTileEntity(pos) instanceof CraftingCenterTile && player.inventory.getCurrentItem() == ItemStack.EMPTY) {
             CraftingCenterTile tile = (CraftingCenterTile) world.getTileEntity(pos);
             if (tile.getRecipe() != null) {
-                player.addChatComponentMessage(new TextComponentString(EnumColor.DARK_BLUE + "Making: " + tile.getRecipe().result.getDisplayName()));
+                player.sendStatusMessage(new TextComponentString(EnumColor.DARK_BLUE + "Making: " + tile.getRecipe().result.getDisplayName()), false);
                 for (EnumFacing direction : CraftingCenterTile.pedestalRelativeLocations) {
                     AuraTilePedestal pedestal = ((AuraTilePedestal) world.getTileEntity(pos.offset(direction)));
                     if (tile.getRecipe() != null) {
-                        player.addChatComponentMessage(new TextComponentString("" + EnumColor.AQUA + pedestal.powerReceived + "/" + tile.getRecipe().getAuraFromItem(pedestal.itemStack)));
+                        player.sendStatusMessage(new TextComponentString("" + EnumColor.AQUA + pedestal.powerReceived + "/" + tile.getRecipe().getAuraFromItem(pedestal.itemStack)), false);
                     } else {
                         AuraCascade.log.warn("Invalid recipe when checking crafting center");
                     }
                 }
             } else {
-                player.addChatComponentMessage(new TextComponentString("No Recipe Selected"));
+                player.sendStatusMessage(new TextComponentString("No Recipe Selected"), false);
 
             }
             return true;
@@ -206,6 +208,7 @@ public class AuraBlock extends Block implements IToolTip, ITTinkererBlock, ITile
                     ((AuraTile) te).storage += 1000 * stack.stackSize;
                     world.markBlocksDirtyVertical(pos.getX(), pos.getZ(), pos.getX(), pos.getZ());
                     world.notifyNeighborsOfStateChange(pos, this);
+
                     AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, entity.posX, entity.posY, entity.posZ), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32));
 
                     entity.setDead();
@@ -230,7 +233,7 @@ public class AuraBlock extends Block implements IToolTip, ITTinkererBlock, ITile
         if (te instanceof IInventory) {
             IInventory inv = (IInventory) te;
             for (int i = 0; i < inv.getSizeInventory(); i++) {
-                if (inv.getStackInSlot(i) != null) {
+                if (inv.getStackInSlot(i) != ItemStack.EMPTY) {
                     double d0 = AuraUtil.getDropOffset(world);
                     double d1 = AuraUtil.getDropOffset(world);
                     double d2 = AuraUtil.getDropOffset(world);
