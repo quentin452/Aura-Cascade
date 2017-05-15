@@ -54,11 +54,11 @@ public class LootTile extends ConsumerTile {
         	lootStack = this.getWorld().getLootTableManager().getLootTableFromLocation(new ResourceLocation("minecraft", "chests/simple_dungeon")).generateLootForPools(rand, new LootContext.Builder(((WorldServer) this.getWorld())).build()).get(0);
             //OLD CODE: lootStack = ChestGenHooks.getOneItem(ChestGenHooks.DUNGEON_CHEST, new Random());
         } while (IMCManager.isStackBlacklistedFromLoot(lootStack));
-        EntityItem entityItem = new EntityItem(worldObj, pos.getX() + .5, pos.getY() + 1.5, pos.getZ() + .5, lootStack);
+        EntityItem entityItem = new EntityItem(world, pos.getX() + .5, pos.getY() + 1.5, pos.getZ() + .5, lootStack);
         entityItem.motionX = 0;
         entityItem.motionY = 0;
         entityItem.motionZ = 0;
-        worldObj.spawnEntity(entityItem);
+        world.spawnEntity(entityItem);
 
     }
 }

@@ -37,23 +37,23 @@ public class AuraTileCapacitor extends AuraTile {
     @Override
     public void update() {
         super.update();
-        if (!worldObj.isRemote) {
+        if (!world.isRemote) {
             if (ticksDisabled > 0) {
                 ticksDisabled--;
             }
 
-            if (worldObj.getTotalWorldTime() % 20 == 19 && storage >= storageValues[storageValueIndex]) {
+            if (world.getTotalWorldTime() % 20 == 19 && storage >= storageValues[storageValueIndex]) {
                 aboutToBurst = true;
-                worldObj.setBlockState(getPos(), worldObj.getBlockState(getPos()).withProperty(AuraBlockCapacitor.BURSTING, true), 3);
-                AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(2, getPos().getX() + .5, getPos().getY() + .5, getPos().getZ() + .5), new NetworkRegistry.TargetPoint(worldObj.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 32));
+                world.setBlockState(getPos(), world.getBlockState(getPos()).withProperty(AuraBlockCapacitor.BURSTING, true), 3);
+                AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(2, getPos().getX() + .5, getPos().getY() + .5, getPos().getZ() + .5), new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 32));
             }
 
-            if (worldObj.getTotalWorldTime() % 5 == 0 && aboutToBurst) {
+            if (world.getTotalWorldTime() % 5 == 0 && aboutToBurst) {
                 aboutToBurst = false;
                 ticksDisabled = 410;
 
-                worldObj.setBlockState(getPos(), worldObj.getBlockState(getPos()).withProperty(AuraBlockCapacitor.BURSTING, false), 3);
-                worldObj.notifyBlockOfStateChange(pos, worldObj.getBlockState(pos).getBlock());
+                world.setBlockState(getPos(), world.getBlockState(getPos()).withProperty(AuraBlockCapacitor.BURSTING, false), 3);
+                world.notifyBlockOfStateChange(pos, world.getBlockState(pos).getBlock());
             }
         }
     }

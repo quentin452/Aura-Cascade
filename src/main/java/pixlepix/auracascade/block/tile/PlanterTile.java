@@ -31,9 +31,9 @@ public class PlanterTile extends ConsumerTile {
     public void onUsePower() {
      //   AuraCascade.analytics.eventDesign("consumerPlant", AuraUtil.formatLocation(this));
         BlockPos updatePos = pos.up(2);
-        Block block = worldObj.getBlockState(updatePos).getBlock();
+        Block block = world.getBlockState(updatePos).getBlock();
         for (int i = 0; i < 50; i++) {
-            block.updateTick(worldObj, updatePos, worldObj.getBlockState(updatePos), new Random());
+            block.updateTick(world, updatePos, world.getBlockState(updatePos), new Random());
         }
     }
 }

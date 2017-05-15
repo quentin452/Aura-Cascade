@@ -32,7 +32,7 @@ public class PacketFairyRequestUpdate implements IMessage, IMessageHandler<Packe
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(entityFairy.worldObj.provider.getDimension());
+        buf.writeInt(entityFairy.world.provider.getDimension());
         buf.writeInt(entityFairy.getEntityId());
     }
 

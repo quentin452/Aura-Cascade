@@ -33,11 +33,11 @@ public class SpawnTile extends ConsumerTile {
     @Override
     public void onUsePower() {
         //AuraCascade.analytics.eventDesign("consumerSpawner", AuraUtil.formatLocation(this));
-        Biome.SpawnListEntry spawnListEntry = ((WorldServer) worldObj).getSpawnListEntryForTypeAt(EnumCreatureType.MONSTER, getPos());
+        Biome.SpawnListEntry spawnListEntry = ((WorldServer) world).getSpawnListEntryForTypeAt(EnumCreatureType.MONSTER, getPos());
         try {
-            EntityLiving entity = (EntityLiving) spawnListEntry.entityClass.getConstructor(new Class[]{World.class}).newInstance(worldObj);
+            EntityLiving entity = (EntityLiving) spawnListEntry.entityClass.getConstructor(new Class[]{World.class}).newInstance(world);
             entity.setPosition(pos.getX() + .5, pos.getY() + 2, pos.getZ() + .5);
-            worldObj.spawnEntity(entity);
+            world.spawnEntity(entity);
             //TODO 1.8.8 entity.onSpawnWithEgg(null);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException  | InvocationTargetException e) {
             e.printStackTrace();

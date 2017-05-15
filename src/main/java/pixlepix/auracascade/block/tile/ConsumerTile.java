@@ -68,13 +68,13 @@ public abstract class ConsumerTile extends TileEntity implements ITickable {
 
     public void updateMonitor() {
         for (EnumFacing d1 : EnumFacing.VALUES) {
-            Block b = worldObj.getBlockState(getPos().offset(d1)).getBlock();
+            Block b = world.getBlockState(getPos().offset(d1)).getBlock();
             if (b instanceof BlockMonitor) {
 
                 for (EnumFacing d2 : EnumFacing.VALUES) {
                     BlockPos pos = getPos().offset(d2).offset(d1);
-                    Block b2 = worldObj.getBlockState(pos).getBlock();
-                    b2.onNeighborChange(worldObj, pos, getPos());
+                    Block b2 = world.getBlockState(pos).getBlock();
+                    b2.onNeighborChange(world, pos, getPos());
                 }
             }
         }
@@ -82,12 +82,12 @@ public abstract class ConsumerTile extends TileEntity implements ITickable {
 
     @Override
     public void update() {
-        if (!worldObj.isRemote) {
-            if (worldObj.getTotalWorldTime() % 20 == 18) {
+        if (!world.isRemote) {
+            if (world.getTotalWorldTime() % 20 == 18) {
                 storedPower *= .25;
             }
 
-            if (worldObj.getTotalWorldTime() % 20 == 0) {
+            if (world.getTotalWorldTime() % 20 == 0) {
                 if (lastValidState != validItemsNearby()) {
                     lastValidState = !lastValidState;
                     updateMonitor();
@@ -97,7 +97,7 @@ public abstract class ConsumerTile extends TileEntity implements ITickable {
             boolean changeLastPower = false;
             //Drain energy from color Nodes
             for (EnumFacing direction : EnumFacing.VALUES) {
-                TileEntity tileEntity = worldObj.getTileEntity(getPos().offset(direction));
+                TileEntity tileEntity = world.getTileEntity(getPos().offset(direction));
                 if (tileEntity instanceof AuraTile) {
                     AuraTile auraTile = (AuraTile) tileEntity;
                     if (auraTile.energy > 0) {
@@ -108,21 +108,21 @@ public abstract class ConsumerTile extends TileEntity implements ITickable {
                     }
                 }
             }
-            if (worldObj.getTotalWorldTime() % 20 == 0) {
+            if (world.getTotalWorldTime() % 20 == 0) {
                 lastPower = 0;
             }
             if (changeLastPower) {
                 lastPower = storedPower;
                 markDirty();
-            } else if (worldObj.getTotalWorldTime() % 20 == 2) {
+            } else if (world.getTotalWorldTime() % 20 == 2) {
             	markDirty();
             }
 
-            if (worldObj.getTotalWorldTime() % 500 == 0) {
+            if (world.getTotalWorldTime() % 500 == 0) {
                 AuraUtil.keepAlive(this, 3);
             }
 
-            if (worldObj.getTotalWorldTime() % 20 == 1 || worldObj.getTotalWorldTime() % 20 == 2) {
+            if (world.getTotalWorldTime() % 20 == 1 || world.getTotalWorldTime() % 20 == 2) {
 
                 int nextBoostCost = getPowerPerProgress();
                 while (true) {
@@ -138,8 +138,8 @@ public abstract class ConsumerTile extends TileEntity implements ITickable {
                     storedPower -= nextBoostCost;
                     nextBoostCost *= 2;
                     markDirty();
-                   // worldObj.notifyBlockOfStateChange(getPos(), worldObj.getBlockState(pos).getBlock());
-                    worldObj.markAndNotifyBlock(this.pos, this.worldObj.getChunkFromBlockCoords(this.pos),this.blockType.getDefaultState(), this.blockType.getDefaultState(), 2);
+                   // world.notifyBlockOfStateChange(getPos(), world.getBlockState(pos).getBlock());
+                    world.markAndNotifyBlock(this.pos, this.world.getChunkFromBlockCoords(this.pos),this.blockType.getDefaultState(), this.blockType.getDefaultState(), 2);
                 }
             }
         }

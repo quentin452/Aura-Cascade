@@ -39,7 +39,7 @@ public class AuraTileRF extends AuraTile {
         super.update();
         //TODO Reimplement RF tile
         /*
-        if (worldObj.getTotalWorldTime() % 40 == 0) {
+        if (world.getTotalWorldTime() % 40 == 0) {
             foundTiles.clear();
             LinkedList<BlockPos> nextTiles = new LinkedList<BlockPos>();
             nextTiles.add(getPos());
@@ -47,7 +47,7 @@ public class AuraTileRF extends AuraTile {
                 BlockPos target = nextTiles.removeFirst();
                 for (EnumFacing direction : EnumFacing.VALUES) {
                     BlockPos adjacent = target.offset(direction);
-                    TileEntity entity = worldObj.getTileEntity(adjacent);
+                    TileEntity entity = world.getTileEntity(adjacent);
                     if (entity instanceof IEnergyReceiver) {
                         if (!nextTiles.contains(adjacent) && !foundTiles.contains(adjacent)) {
                             nextTiles.add(adjacent);
@@ -78,8 +78,8 @@ public class AuraTileRF extends AuraTile {
 
             for (BlockPos pos : foundTiles) {
 
-                String modid = GameData.getBlockRegistry().getNameForObject(worldObj.getBlockState(pos).getBlock()).getResourceDomain();
-                TileEntity te = worldObj.getTileEntity(pos);
+                String modid = GameData.getBlockRegistry().getNameForObject(world.getBlockState(pos).getBlock()).getResourceDomain();
+                TileEntity te = world.getTileEntity(pos);
                 // todo 1.8.8 await duct update
                 // if (te instanceof IEnderEnergyHandler) {
                 //    disabled = true;
@@ -122,7 +122,7 @@ public class AuraTileRF extends AuraTile {
             }
         }
 
-        if (worldObj.isRemote && worldObj.getTotalWorldTime() % 3 == 0) {
+        if (world.isRemote && world.getTotalWorldTime() % 3 == 0) {
             for (BlockPos tuple : particleTiles) {
                 Random random = new Random();
                 double x = tuple.getX() + random.nextDouble();
@@ -137,14 +137,14 @@ public class AuraTileRF extends AuraTile {
             int divisions = foundTiles.size();
             for (BlockPos pos : foundTiles) {
 
-                TileEntity entity = worldObj.getTileEntity(pos);
+                TileEntity entity = world.getTileEntity(pos);
                 if (!(entity instanceof IEnergyReceiver) || ((IEnergyReceiver) entity).receiveEnergy(null, 1, true) <= 0) {
                     divisions--;
                 }
             }
             if (divisions > 0) {
                 for (BlockPos pos : foundTiles) {
-                    TileEntity entity = worldObj.getTileEntity(pos);
+                    TileEntity entity = world.getTileEntity(pos);
                     if (entity instanceof IEnergyReceiver) {
                         ((IEnergyReceiver) entity).receiveEnergy(null, (int) (lastPower * Config.powerFactor / divisions), false);
                     }
@@ -153,11 +153,11 @@ public class AuraTileRF extends AuraTile {
         }
 
         //Just before color moves
-        if (worldObj.getTotalWorldTime() % 20 == 0 && !worldObj.isRemote) {
+        if (world.getTotalWorldTime() % 20 == 0 && !world.isRemote) {
             lastPower = 0;
         }
-        if (worldObj.getTotalWorldTime() % 20 == 1) {
-            worldObj.markBlocksDirtyVertical(pos.getX(), pos.getZ(), pos.getX(), pos.getZ());
+        if (world.getTotalWorldTime() % 20 == 1) {
+            world.markBlocksDirtyVertical(pos.getX(), pos.getZ(), pos.getX(), pos.getZ());
         }
 	*/
 

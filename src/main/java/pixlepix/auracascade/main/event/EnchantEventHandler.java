@@ -168,7 +168,7 @@ public class EnchantEventHandler {
 
         int areaOfEffect = getEffectStrength(tool, EnumRainbowColor.VIOLET, EnumRainbowColor.BLUE);
         if (areaOfEffect != 0) {
-            World world = event.getTarget().worldObj;
+            World world = event.getTarget().world;
             List<EntityLivingBase> list = world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(event.getTarget().posX - 2, event.getTarget().posY - 2, event.getTarget().posZ - 2, event.getTarget().posX + 2, event.getTarget().posY + 2, event.getTarget().posZ + 2));
             for (EntityLivingBase entityLivingBase : list) {
                 if (entityLivingBase != event.getEntityLiving() && entityLivingBase != event.getTarget()) {
@@ -292,7 +292,7 @@ public class EnchantEventHandler {
     @SubscribeEvent
     public void onDrops(LivingDropsEvent event) {
         Entity entity = event.getSource().getSourceOfDamage();
-        if (entity instanceof EntityPlayer && !entity.worldObj.isRemote) {
+        if (entity instanceof EntityPlayer && !entity.world.isRemote) {
             ItemStack stack = ((EntityPlayer) entity).inventory.getCurrentItem();
             int looting = getEffectStrength(stack, EnumRainbowColor.VIOLET, EnumRainbowColor.YELLOW);
             if (looting > 0) {
@@ -312,7 +312,7 @@ public class EnchantEventHandler {
 
     @SubscribeEvent
     public void onGetBreakSpeed(PlayerEvent.BreakSpeed event) {
-        if (event.getEntityPlayer().inventory.getCurrentItem() != null) {
+        if (!event.getEntityPlayer().inventory.getCurrentItem().isEmpty()) {
             ItemStack tool = event.getEntityPlayer().inventory.getCurrentItem();
 
             int miningDebuff = getEffectStrength(tool, EnumRainbowColor.RED, EnumRainbowColor.GREEN);
@@ -320,12 +320,12 @@ public class EnchantEventHandler {
                 event.setNewSpeed((float) (event.getNewSpeed() / Math.pow(3, miningDebuff)));
             }
 
-            if (ForgeHooks.canToolHarvestBlock(event.getEntityPlayer().worldObj, event.getPos(), tool)) {
+            if (ForgeHooks.canToolHarvestBlock(event.getEntityPlayer().world, event.getPos(), tool)) {
                 Block block = event.getState().getBlock();
                 int efficiency = getEffectStrength(tool, EnumRainbowColor.ORANGE, EnumRainbowColor.ORANGE);
                 event.setNewSpeed((float) (event.getNewSpeed() * Math.pow(1.15, efficiency)));
                 int shatter = getEffectStrength(tool, EnumRainbowColor.ORANGE, EnumRainbowColor.VIOLET);
-                if (shatter > 0 && event.getState().getBlock().getBlockHardness(event.getState(), event.getEntity().worldObj, event.getPos()) >= 3F) {
+                if (shatter > 0 && event.getState().getBlock().getBlockHardness(event.getState(), event.getEntity().world, event.getPos()) >= 3F) {
                     event.setNewSpeed((float) (event.getNewSpeed() * Math.pow(1.5, shatter)));
                 }
 
@@ -358,7 +358,7 @@ public class EnchantEventHandler {
     }
 
     public boolean containsOredict(Block block, String name) {
-        if (block == null || Item.getItemFromBlock(block) == null) {
+        if (block == null || Item.getItemFromBlock(block) == ItemStack.EMPTY.getItem()) {
             return false;
         }
         String oreName = OreDictionary.getOreIDs(new ItemStack(block)).length != 0 ? OreDictionary.getOreName(OreDictionary.getOreIDs(new ItemStack(block))[0]) : null;
@@ -371,7 +371,7 @@ public class EnchantEventHandler {
         int i = 0;
         Item item = Item.getItemFromBlock(state.getBlock());
 
-        if (item != null && item.getHasSubtypes())
+        if (item != ItemStack.EMPTY.getItem() && item.getHasSubtypes())
         {
             i = state.getBlock().getMetaFromState(state);
         }

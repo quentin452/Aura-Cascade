@@ -31,7 +31,7 @@ public class AuraTilePedestal extends AuraTile implements IInventory {
     public void verifyConnections() {
         super.verifyConnections();
         if (direction != null) {
-            TileEntity tileEntity = worldObj.getTileEntity(getPos().offset(direction));
+            TileEntity tileEntity = world.getTileEntity(getPos().offset(direction));
             if (!(tileEntity instanceof CraftingCenterTile)) {
                 direction = null;
             }
@@ -39,7 +39,7 @@ public class AuraTilePedestal extends AuraTile implements IInventory {
 
         if (direction == null) {
             for (EnumFacing searchDir : CraftingCenterTile.pedestalRelativeLocations) {
-                TileEntity tileEntity = worldObj.getTileEntity(getPos().offset(searchDir));
+                TileEntity tileEntity = world.getTileEntity(getPos().offset(searchDir));
                 if (tileEntity instanceof CraftingCenterTile) {
                     direction = searchDir;
                     break;
@@ -52,7 +52,7 @@ public class AuraTilePedestal extends AuraTile implements IInventory {
         if (direction == null) {
             return null;
         }
-        TileEntity te = worldObj.getTileEntity(getPos().offset(direction));
+        TileEntity te = world.getTileEntity(getPos().offset(direction));
         return te instanceof CraftingCenterTile ? (CraftingCenterTile) te : null;
     }
 

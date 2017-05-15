@@ -40,7 +40,7 @@ public class PotionTile extends ConsumerTile {
     @Override
     public boolean validItemsNearby() {
         int range = 3;
-        List<EntityItem> nearbyItems = worldObj.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)));
+        List<EntityItem> nearbyItems = world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)));
         for (EntityItem entityItem : nearbyItems) {
             ItemStack stack = entityItem.getEntityItem();
             ItemStack smeltingResult = getBrewResult(stack);
@@ -62,7 +62,7 @@ public class PotionTile extends ConsumerTile {
     public void onUsePower() {
     //    AuraCascade.analytics.eventDesign("consumerBrew", AuraUtil.formatLocation(this));
         int range = 3;
-        List<EntityItem> nearbyItems = worldObj.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)));
+        List<EntityItem> nearbyItems = world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)));
         for (EntityItem entityItem : nearbyItems) {
             ItemStack stack = entityItem.getEntityItem();
             ItemStack smeltingResult = getBrewResult(stack);
@@ -75,16 +75,16 @@ public class PotionTile extends ConsumerTile {
                     stack.stackSize--;
                 }
 
-                EntityItem newEntity = new EntityItem(worldObj, entityItem.posX, entityItem.posY, entityItem.posZ, smeltingResult.copy());
+                EntityItem newEntity = new EntityItem(world, entityItem.posX, entityItem.posY, entityItem.posZ, smeltingResult.copy());
 
                 AuraUtil.setItemDelay(newEntity, AuraUtil.getItemDelay(entityItem));
                 newEntity.motionX = entityItem.motionX;
                 newEntity.motionY = entityItem.motionY;
                 newEntity.motionZ = entityItem.motionZ;
 
-                worldObj.spawnEntity(newEntity);
+                world.spawnEntity(newEntity);
 
-                AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(6, newEntity.posX, newEntity.posY, newEntity.posZ), new NetworkRegistry.TargetPoint(worldObj.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32));
+                AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(6, newEntity.posX, newEntity.posY, newEntity.posZ), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32));
 
                 break;
             }

@@ -19,7 +19,7 @@ public class MinerTile extends ConsumerTile {
     public void readCustomNBT(NBTTagCompound nbt) {
         super.readCustomNBT(nbt);
         if (nbt.hasKey("explosion")) {
-            explosion = (EntityMinerExplosion) worldObj.getEntityByID(nbt.getInteger("explosion"));
+            explosion = (EntityMinerExplosion) world.getEntityByID(nbt.getInteger("explosion"));
             nbt.setBoolean("hasBeenPulsed", hasBeenPulsed);
         }
     }
@@ -50,7 +50,7 @@ public class MinerTile extends ConsumerTile {
 
     @Override
     public void update() {
-        if (worldObj.isBlockIndirectlyGettingPowered(getPos()) > 0) {
+        if (world.isBlockIndirectlyGettingPowered(getPos()) > 0) {
             hasBeenPulsed = true;
         }
         super.update();
@@ -63,14 +63,14 @@ public class MinerTile extends ConsumerTile {
         if (!hasBeenPulsed) {
             if (explosion != null && !explosion.isDead) {
                 explosion.charge++;
-                explosion.lastCharged = worldObj.getTotalWorldTime();
+                explosion.lastCharged = world.getTotalWorldTime();
             } else {
-                explosion = new EntityMinerExplosion(worldObj);
+                explosion = new EntityMinerExplosion(world);
                 explosion.setPosition(pos.getX() + .5, pos.getY() - 1.5, pos.getZ() + .5);
                 explosion.charge = 1;
-                explosion.lastCharged = worldObj.getTotalWorldTime();
+                explosion.lastCharged = world.getTotalWorldTime();
                 explosion.bounce();
-                worldObj.spawnEntity(explosion);
+                world.spawnEntity(explosion);
 
             }
 
@@ -78,14 +78,14 @@ public class MinerTile extends ConsumerTile {
             if (explosion != null && !explosion.isDead) {
                 explosion.setDead();
 
-                if (worldObj.isRemote) {
-                    this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, explosion.posX, explosion.posY, explosion.posZ, 0.0D, 0.0D, 0.0D);
+                if (world.isRemote) {
+                    this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, explosion.posX, explosion.posY, explosion.posZ, 0.0D, 0.0D, 0.0D);
                 } else if (explosion.charge > 20) {
                     int oresSpawned = (int) ((Math.pow(explosion.charge, 1.5)) / 50);
                     for (int i = 0; i < oresSpawned; i++) {
                         ItemStack stack = OreDropManager.getOreToPut();
-                        EntityItem item = new EntityItem(worldObj, pos.getX() + .5, pos.getY() + 1.5, pos.getZ() + .5, stack);
-                        worldObj.spawnEntity(item);
+                        EntityItem item = new EntityItem(world, pos.getX() + .5, pos.getY() + 1.5, pos.getZ() + .5, stack);
+                        world.spawnEntity(item);
                     }
                 //    AuraCascade.analytics.eventDesign("consumerMinerLoot", AuraUtil.formatLocation(this), explosion.charge);
                 }

@@ -23,7 +23,7 @@ public class DyeTile extends ConsumerTile {
 
     @Override
     public boolean validItemsNearby() {
-        List<EntitySheep> nearbySheep = worldObj.getEntitiesWithinAABB(EntitySheep.class, PosUtil.getBoundingBox(getPos(), 2));
+        List<EntitySheep> nearbySheep = world.getEntitiesWithinAABB(EntitySheep.class, PosUtil.getBoundingBox(getPos(), 2));
         return nearbySheep.size() > 0;
     }
 
@@ -31,7 +31,7 @@ public class DyeTile extends ConsumerTile {
     public void onUsePower() {
 
        // AuraCascade.analytics.eventDesign("consumerDye", AuraUtil.formatLocation(this));
-        List<EntitySheep> nearbySheep = worldObj.getEntitiesWithinAABB(EntitySheep.class, PosUtil.getBoundingBox(getPos(), 2));
+        List<EntitySheep> nearbySheep = world.getEntitiesWithinAABB(EntitySheep.class, PosUtil.getBoundingBox(getPos(), 2));
         if (nearbySheep.size() > 0) {
             EntitySheep sheep = nearbySheep.get(new Random().nextInt(nearbySheep.size()));
             sheep.setSheared(false);

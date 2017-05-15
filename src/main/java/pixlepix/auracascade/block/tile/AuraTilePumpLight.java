@@ -33,7 +33,7 @@ public class AuraTilePumpLight extends AuraTilePumpBase {
             hasSearched = false;
         }
 
-        if (pumpPower == 0 && (!hasSearched || worldObj.getTotalWorldTime() % 1200 == 0)) {
+        if (pumpPower == 0 && (!hasSearched || world.getTotalWorldTime() % 1200 == 0)) {
             for (EnumFacing direction : EnumFacing.VALUES) {
                 BlockPos pos = getPos().offset(direction);
                 if (consumeLightSource(pos, Blocks.GLOWSTONE)) {
@@ -51,14 +51,14 @@ public class AuraTilePumpLight extends AuraTilePumpBase {
     }
 
     public boolean consumeLightSource(BlockPos pos, Block block) {
-        if (worldObj.getBlockState(pos).getBlock() == block) {
-            if (!worldObj.isRemote) {
+        if (world.getBlockState(pos).getBlock() == block) {
+            if (!world.isRemote) {
                 for (int j = 0; j < 5; j++) {
                     AuraCascade.proxy.addBlockDestroyEffects(pos);
                 }
             }
 
-            worldObj.setBlockToAir(pos);
+            world.setBlockToAir(pos);
             return true;
         }
         return false;

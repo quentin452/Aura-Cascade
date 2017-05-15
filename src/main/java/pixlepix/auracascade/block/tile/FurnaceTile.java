@@ -35,7 +35,7 @@ public class FurnaceTile extends ConsumerTile {
     @Override
     public boolean validItemsNearby() {
         int range = 3;
-        List<EntityItem> nearbyItems = worldObj.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)));
+        List<EntityItem> nearbyItems = world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)));
         for (EntityItem entityItem : nearbyItems) {
             ItemStack stack = entityItem.getEntityItem();
             if (FurnaceRecipes.instance().getSmeltingResult(stack) != null) {
@@ -56,7 +56,7 @@ public class FurnaceTile extends ConsumerTile {
     public void onUsePower() {
    //     AuraCascade.analytics.eventDesign("consumerSmelt", AuraUtil.formatLocation(this));
         int range = 3;
-        List<EntityItem> nearbyItems = worldObj.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)));
+        List<EntityItem> nearbyItems = world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)));
         for (EntityItem entityItem : nearbyItems) {
             ItemStack stack = entityItem.getEntityItem();
             if (FurnaceRecipes.instance().getSmeltingResult(stack) != null) {
@@ -68,7 +68,7 @@ public class FurnaceTile extends ConsumerTile {
                     stack.stackSize--;
                 }
 
-                AuraUtil.respawnItemWithParticles(worldObj, entityItem, FurnaceRecipes.instance().getSmeltingResult(stack).copy());
+                AuraUtil.respawnItemWithParticles(world, entityItem, FurnaceRecipes.instance().getSmeltingResult(stack).copy());
 
                 break;
             }

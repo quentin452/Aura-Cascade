@@ -20,16 +20,16 @@ public class AuraTilePumpRedstone extends AuraTilePumpBase {
             for (EnumFacing direction : EnumFacing.VALUES) {
                 for (int i = 1; i < 16; i++) {
                     BlockPos pos = getPos().offset(direction, i);
-                    Block block = worldObj.getBlockState(pos).getBlock();
-                    if (block instanceof BlockRedstoneWire && worldObj.getBlockState(pos).getValue(BlockRedstoneWire.POWER) > 0) {
+                    Block block = world.getBlockState(pos).getBlock();
+                    if (block instanceof BlockRedstoneWire && world.getBlockState(pos).getValue(BlockRedstoneWire.POWER) > 0) {
                         addFuel((int) (Config.pumpRedstoneDuration * Math.pow(1.4, i)), Config.pumpRedstoneSpeed);
-                        if (!worldObj.isRemote) {
+                        if (!world.isRemote) {
                             for (int j = 0; j < 5; j++) {
                                 AuraCascade.proxy.addBlockDestroyEffects(pos);
                             }
                         }
 
-                        worldObj.setBlockToAir(pos);
+                        world.setBlockToAir(pos);
                     } else {
                         break;
                     }

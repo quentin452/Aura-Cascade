@@ -33,11 +33,11 @@ public class AngelSteelTile extends ConsumerTile {
     public void onUsePower() {
       //  AuraCascade.analytics.eventDesign("cascaderAngel", AuraUtil.formatLocation(this));
         ItemStack lootStack = new ItemStack(BlockRegistry.getFirstItemFromClass(ItemAngelsteelIngot.class));
-        EntityItem entityItem = new EntityItem(worldObj, pos.getX() + .5, pos.getY() + 1.5, pos.getZ() + .5, lootStack);
+        EntityItem entityItem = new EntityItem(world, pos.getX() + .5, pos.getY() + 1.5, pos.getZ() + .5, lootStack);
         entityItem.motionX = 0;
         entityItem.motionY = 0;
         entityItem.motionZ = 0;
-        worldObj.spawnEntity(entityItem);
+        world.spawnEntity(entityItem);
 
     }
 }

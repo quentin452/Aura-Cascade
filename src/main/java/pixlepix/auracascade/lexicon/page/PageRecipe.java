@@ -62,7 +62,7 @@ public class PageRecipe extends LexiconPage {
         }
 
         if (tooltipStack != null) {
-            List<String> tooltipData = tooltipStack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
+            List<String> tooltipData = tooltipStack.getTooltip(Minecraft.getMinecraft().player, false);
             List<String> parsedTooltip = new ArrayList<>();
             boolean first = true;
 
@@ -166,7 +166,7 @@ public class PageRecipe extends LexiconPage {
 
             if (accountForContainer) {
                 ItemStack containerStack = stack.getItem().getContainerItem(stack);
-                if (containerStack != ItemStack.EMPTY && containerStack.isEmpty())
+                if (!containerStack.isEmpty())
                     tooltipContainerStack = containerStack;
             }
         }

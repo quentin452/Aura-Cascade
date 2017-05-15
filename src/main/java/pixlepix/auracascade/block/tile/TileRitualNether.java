@@ -43,8 +43,8 @@ public class TileRitualNether extends ConsumerTile implements ITickable {
     @Override
     public void update() {
         int count = 0;
-        if (!worldObj.isRemote && toSearch.size() == 0 && started) {
-            worldObj.setBlockToAir(getPos());
+        if (!world.isRemote && toSearch.size() == 0 && started) {
+            world.setBlockToAir(getPos());
         }
         while (toSearch.size() > 0) {
             BlockPos pos = toSearch.getFirst();
@@ -54,33 +54,33 @@ public class TileRitualNether extends ConsumerTile implements ITickable {
             if (getPos().distanceSq(pos) > 150 * 150) {
                 continue;
             }
-            Chunk chunk = worldObj.getChunkFromBlockCoords(pos);
+            Chunk chunk = world.getChunkFromBlockCoords(pos);
             byte[] biomeData = chunk.getBiomeArray();
             biomeData[(z & 15) << 4 | (x & 15)] = getBiomeId();
             boolean particle = true;
             for (int y = 0; y < 255; y++) {
-                Block b = getMappedBlock(worldObj.getBlockState(new BlockPos(x, y, z)).getBlock());
+                Block b = getMappedBlock(world.getBlockState(new BlockPos(x, y, z)).getBlock());
                 if (b != null) {
-                    worldObj.setBlockState(new BlockPos(x, y, z), b.getDefaultState(), 2);
+                    world.setBlockState(new BlockPos(x, y, z), b.getDefaultState(), 2);
                     if (particle) {
                         particle = false;
                         AuraCascade.proxy.addBlockDestroyEffects(new BlockPos(x, y, z));
                     }
                 }
             }
-            if (worldObj.getBiomeForCoordsBody(getPos().east()) == targetBiome
+            if (world.getBiomeForCoordsBody(getPos().east()) == targetBiome
                     && !toSearch.contains(getPos().east())) {
                 toSearch.addLast(getPos().east());
             }
-            if (worldObj.getBiomeForCoordsBody(getPos().west()) == targetBiome
+            if (world.getBiomeForCoordsBody(getPos().west()) == targetBiome
                     && !toSearch.contains(getPos().west())) {
                 toSearch.addLast(getPos().west());
             }
-            if (worldObj.getBiomeForCoordsBody(getPos().south()) == targetBiome
+            if (world.getBiomeForCoordsBody(getPos().south()) == targetBiome
                     && !toSearch.contains(getPos().south())) {
                 toSearch.addLast(getPos().south());
             }
-            if (worldObj.getBiomeForCoordsBody(getPos().north()) == targetBiome
+            if (world.getBiomeForCoordsBody(getPos().north()) == targetBiome
                     && !toSearch.contains(getPos().north())) {
                 toSearch.addLast(getPos().north());
             }
@@ -96,11 +96,11 @@ public class TileRitualNether extends ConsumerTile implements ITickable {
     @Override
     public void onUsePower() {
        // AuraCascade.analytics.eventDesign("consumerRitual", AuraUtil.formatLocation(this));
-        worldObj.getBiomeForCoordsBody(getPos());
-        if (!(Biome.getIdForBiome(worldObj.getChunkFromBlockCoords(pos).getBiome(pos, worldObj.getBiomeProvider())) == getBiomeId())) {
+        world.getBiomeForCoordsBody(getPos());
+        if (!(Biome.getIdForBiome(world.getChunkFromBlockCoords(pos).getBiome(pos, world.getBiomeProvider())) == getBiomeId())) {
             //BlockPoss are used for convenience, but y-values are irrelavent
             toSearch.addFirst(getPos());
-            targetBiome = worldObj.getBiomeForCoordsBody(getPos());
+            targetBiome = world.getBiomeForCoordsBody(getPos());
             started = true;
         }
  

@@ -32,20 +32,20 @@ public class AuraTilePumpProjectile extends AuraTilePumpBase {
     @Override
     public void update() {
         super.update();
-        List<Entity> entityList = worldObj.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos.getX() - .5, pos.getY() - .5, pos.getZ() - .5, pos.getX() + 1.5, pos.getY() + 1.5, pos.getZ() + 1.5));
+        List<Entity> entityList = world.getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(pos.getX() - .5, pos.getY() - .5, pos.getZ() - .5, pos.getX() + 1.5, pos.getY() + 1.5, pos.getZ() + 1.5));
         for (Entity entity : entityList) {
             if (entity instanceof EntitySnowball || entity instanceof EntityEgg) {
                 //Fun fact: Eggs and snowballs use the same particle code
                 for (int i = 0; i < 8; ++i) {
-                    this.worldObj.spawnParticle(EnumParticleTypes.SNOWBALL, entity.posX, entity.posY, entity.posZ, 0.0D, 0.0D, 0.0D);
+                    this.world.spawnParticle(EnumParticleTypes.SNOWBALL, entity.posX, entity.posY, entity.posZ, 0.0D, 0.0D, 0.0D);
                 }
                 entity.setDead();
-                if (!worldObj.isRemote) {
+                if (!world.isRemote) {
                     onEntityCollidedWithBlock(entity);
                 }
             } else if (entity instanceof EntityArrow) {
                 entity.setDead();
-                if (!worldObj.isRemote) {
+                if (!world.isRemote) {
                     onEntityCollidedWithBlock(entity);
                 }
             }

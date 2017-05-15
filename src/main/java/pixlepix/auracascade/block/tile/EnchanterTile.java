@@ -34,12 +34,12 @@ public class EnchanterTile extends ConsumerTile {
 
     @Override
     public boolean validItemsNearby() {
-        ArrayList<EntityItem> items = (ArrayList<EntityItem>) worldObj.getEntitiesWithinAABB(EntityItem.class, PosUtil.getBoundingBox(getPos(), 3));
+        ArrayList<EntityItem> items = (ArrayList<EntityItem>) world.getEntitiesWithinAABB(EntityItem.class, PosUtil.getBoundingBox(getPos(), 3));
         for (EntityItem item : items) {
             ItemStack toolStack = item.getEntityItem();
             if (EnumEnchantmentType.DIGGER.canEnchantItem(toolStack.getItem()) || EnumEnchantmentType.WEAPON.canEnchantItem(toolStack.getItem())) {
 
-                ArrayList<EntityItem> nextItems = (ArrayList<EntityItem>) worldObj.getEntitiesWithinAABB(EntityItem.class, PosUtil.getBoundingBox(getPos(), 3));
+                ArrayList<EntityItem> nextItems = (ArrayList<EntityItem>) world.getEntitiesWithinAABB(EntityItem.class, PosUtil.getBoundingBox(getPos(), 3));
                 for (EntityItem ingot : nextItems) {
                     if (ingot.getEntityItem().getItem() instanceof ItemMaterial && ((ItemMaterial) ingot.getEntityItem().getItem()).materialIndex == 0) {
                         return true;
@@ -54,12 +54,12 @@ public class EnchanterTile extends ConsumerTile {
 	@Override
     public void onUsePower() {
        // AuraCascade.analytics.eventDesign("consumerEnchant", AuraUtil.formatLocation(this));
-        ArrayList<EntityItem> items = (ArrayList<EntityItem>) worldObj.getEntitiesWithinAABB(EntityItem.class, PosUtil.getBoundingBox(getPos(), 3));
+        ArrayList<EntityItem> items = (ArrayList<EntityItem>) world.getEntitiesWithinAABB(EntityItem.class, PosUtil.getBoundingBox(getPos(), 3));
         for (EntityItem item : items) {
             ItemStack toolStack = item.getEntityItem();
             if (EnumEnchantmentType.DIGGER.canEnchantItem(toolStack.getItem()) || EnumEnchantmentType.WEAPON.canEnchantItem(toolStack.getItem())) {
 
-                ArrayList<EntityItem> nextItems = (ArrayList<EntityItem>) worldObj.getEntitiesWithinAABB(EntityItem.class, PosUtil.getBoundingBox(getPos(), 3));
+                ArrayList<EntityItem> nextItems = (ArrayList<EntityItem>) world.getEntitiesWithinAABB(EntityItem.class, PosUtil.getBoundingBox(getPos(), 3));
                 for (EntityItem ingot : nextItems) {
                     if (ingot.getEntityItem().getItem() instanceof ItemMaterial && ((ItemMaterial) ingot.getEntityItem().getItem()).materialIndex == 0) {
                         ItemStack ingotStack = ingot.getEntityItem();
@@ -74,7 +74,7 @@ public class EnchanterTile extends ConsumerTile {
                                 EnchantmentHelper.setEnchantments(enchantMap, toolStack);
                             }
                             ingotStack.stackSize--;
-                            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, item.posX, item.posY, item.posZ), new NetworkRegistry.TargetPoint(worldObj.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 32));
+                            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, item.posX, item.posY, item.posZ), new NetworkRegistry.TargetPoint(world.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 32));
 
                             if (ingotStack.stackSize <= 0) {
                                 ingot.setDead();
