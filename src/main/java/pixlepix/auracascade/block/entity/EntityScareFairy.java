@@ -9,7 +9,7 @@ import pixlepix.auracascade.main.CommonProxy;
 public class EntityScareFairy extends EntityFairy {
     public EntityScareFairy(World p_i1582_1_) {
         super(p_i1582_1_);
-        if (!worldObj.isRemote) {
+        if (!world.isRemote) {
             CommonProxy.eventHandler.scareFairies.add(this);
         }
     }
@@ -18,7 +18,7 @@ public class EntityScareFairy extends EntityFairy {
     public void setDead() {
         super.setDead();
 
-        if (!worldObj.isRemote) {
+        if (!world.isRemote) {
             CommonProxy.eventHandler.scareFairies.remove(this);
         }
     }

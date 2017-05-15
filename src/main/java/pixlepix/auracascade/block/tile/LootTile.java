@@ -58,7 +58,7 @@ public class LootTile extends ConsumerTile {
         entityItem.motionX = 0;
         entityItem.motionY = 0;
         entityItem.motionZ = 0;
-        worldObj.spawnEntityInWorld(entityItem);
+        worldObj.spawnEntity(entityItem);
 
     }
 }

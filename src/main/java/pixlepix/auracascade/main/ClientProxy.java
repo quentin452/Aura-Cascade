@@ -98,7 +98,7 @@ public class ClientProxy extends CommonProxy {
             Minecraft.getMinecraft().effectRenderer.addEffect(entityFX);
         } else {
         	//TODO Fix the alternative to the config.
-             //Minecraft.getMinecraft().theWorld.spawnEntityInWorld(entityFX);
+             //Minecraft.getMinecraft().theWorld.spawnEntity(entityFX);
         }
     }
 }

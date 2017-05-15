@@ -79,7 +79,7 @@ public class ItemAngelsteelIngot extends Item implements ITTinkererItem, ISpecia
                     item.getEntityItem().stackSize--;
                 }
                 EntityItem item = new EntityItem(entityItem.worldObj, entityItem.posX, entityItem.posY, entityItem.posZ, new ItemStack(this, 1, degree + 1));
-                entityItem.worldObj.spawnEntityInWorld(item);
+                entityItem.worldObj.spawnEntity(item);
                 AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, item.posX, item.posY, item.posZ), new NetworkRegistry.TargetPoint(item.worldObj.provider.getDimension(), item.posX, item.posY, item.posZ, 32));
             }
         }

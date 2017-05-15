@@ -113,7 +113,7 @@ public class AuraUtil {
         newEntity.motionY = oldItem.motionY;
         newEntity.motionZ = oldItem.motionZ;
 
-        worldObj.spawnEntityInWorld(newEntity);
+        worldObj.spawnEntity(newEntity);
 
         AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, newEntity.posX, newEntity.posY, newEntity.posZ), new NetworkRegistry.TargetPoint(worldObj.provider.getDimension(), (int) oldItem.posX, (int) oldItem.posY, (int) oldItem.posZ, 32));
 

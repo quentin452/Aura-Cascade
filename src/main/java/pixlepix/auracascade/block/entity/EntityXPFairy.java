@@ -15,9 +15,9 @@ public class EntityXPFairy extends EntityFairy {
 
     @Override
     public void onEntityUpdate() {
-        if (!worldObj.isRemote && new Random().nextInt(60 * 20) == 0) {
-            EntityXPOrb xpOrb = new EntityXPOrb(worldObj, posX, posY, posZ, 5);
-            worldObj.spawnEntityInWorld(xpOrb);
+        if (!world.isRemote && new Random().nextInt(60 * 20) == 0) {
+            EntityXPOrb xpOrb = new EntityXPOrb(world, posX, posY, posZ, 5);
+            world.spawnEntity(xpOrb);
         }
     }
 }

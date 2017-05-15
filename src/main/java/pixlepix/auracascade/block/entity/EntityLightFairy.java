@@ -16,10 +16,10 @@ public class EntityLightFairy extends EntityFairy {
     @Override
     public void onEntityUpdate() {
         BlockPos pos = new BlockPos(this);
-        int lightValue = worldObj.getLight(pos);
-        if (lightValue < 10 && !worldObj.isRemote) {
-            if (worldObj.isAirBlock(pos)) {
-                worldObj.setBlockState(pos, BlockRegistry.getFirstBlockFromClass(FairyTorch.class).getDefaultState());
+        int lightValue = world.getLight(pos);
+        if (lightValue < 10 && !world.isRemote) {
+            if (world.isAirBlock(pos)) {
+                world.setBlockState(pos, BlockRegistry.getFirstBlockFromClass(FairyTorch.class).getDefaultState());
             }
         }
     }

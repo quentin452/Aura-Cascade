@@ -23,31 +23,31 @@ public class EntityBaitFairy extends EntityFairy {
     @Override
     public void onEntityUpdate() {
         super.onEntityUpdate();
-        if (!worldObj.isRemote) {
+        if (!world.isRemote) {
             if (new Random().nextInt(3600) == 0) {
                 Random random = new Random();
                 Entity entity;
                 switch (random.nextInt(4)) {
                     case 0:
-                        entity = new EntityCow(worldObj);
+                        entity = new EntityCow(world);
                         break;
 
                     case 1:
-                        entity = new EntityChicken(worldObj);
+                        entity = new EntityChicken(world);
                         break;
 
                     case 2:
-                        entity = new EntityPig(worldObj);
+                        entity = new EntityPig(world);
                         break;
 
                     default:
-                        entity = new EntitySheep(worldObj);
+                        entity = new EntitySheep(world);
                         break;
                 }
 
                 entity.setPosition(posX, posY, posZ);
-                worldObj.spawnEntityInWorld(entity);
-                AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(5, entity.posX, entity.posY, entity.posZ), new NetworkRegistry.TargetPoint(entity.worldObj.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
+                world.spawnEntity(entity);
+                AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(5, entity.posX, entity.posY, entity.posZ), new NetworkRegistry.TargetPoint(entity.world.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
 
             }
         }

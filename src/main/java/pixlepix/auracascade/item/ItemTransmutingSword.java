@@ -64,7 +64,7 @@ public class ItemTransmutingSword extends Item implements ITTinkererItem {
                 e.printStackTrace();
             }
 
-            target.worldObj.spawnEntityInWorld(newEntity);
+            target.worldObj.spawnEntity(newEntity);
             if (newEntity instanceof EntitySlime && target instanceof EntitySlime) {
                 // ((EntitySlime) newEntity).setSlimeSize((((EntitySlime) target).getSlimeSize()));
                 //TODO: This requires ASM, and seems fairly pointless.

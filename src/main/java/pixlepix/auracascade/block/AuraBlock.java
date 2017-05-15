@@ -208,7 +208,6 @@ public class AuraBlock extends Block implements IToolTip, ITTinkererBlock, ITile
                     ((AuraTile) te).storage += 1000 * stack.stackSize;
                     world.markBlocksDirtyVertical(pos.getX(), pos.getZ(), pos.getX(), pos.getZ());
                     world.notifyNeighborsOfStateChange(pos, this);
-
                     AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, entity.posX, entity.posY, entity.posZ), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 32));
 
                     entity.setDead();

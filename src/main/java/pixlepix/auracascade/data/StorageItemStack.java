@@ -90,7 +90,7 @@ public class StorageItemStack {
         for (int i = 0; i < maxSize / 64; i++) {
             int delta = Math.min(64, copy.stackSize);
             copy.stackSize -= delta;
-            ItemStack resultStack = null;
+            ItemStack resultStack = ItemStack.EMPTY;
             if (delta > 0) {
                 resultStack = new ItemStack(item, delta, damage);
                 resultStack.setTagCompound((NBTTagCompound) compound.copy());

@@ -28,7 +28,7 @@ public class EntityBuffFairy extends EntityFairy {
     @Override
     public void onEntityUpdate() {
         super.onEntityUpdate();
-        if (!worldObj.isRemote && worldObj.getTotalWorldTime() % 2400 == 0) {
+        if (!world.isRemote && world.getTotalWorldTime() % 2400 == 0) {
             Random random = new Random();
             player.addPotionEffect(potionEffects[random.nextInt(potionEffects.length)]);
             AuraUtil.diamondBurst(player, "happyVillager");

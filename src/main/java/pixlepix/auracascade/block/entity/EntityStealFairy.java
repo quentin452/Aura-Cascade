@@ -21,17 +21,17 @@ public class EntityStealFairy extends EntityFairy {
     @Override
     public void onEntityUpdate() {
         super.onEntityUpdate();
-        if (!worldObj.isRemote && worldObj.getTotalWorldTime() % 200 == 0) {
-            List<EntityPlayer> nearbyEntities = worldObj.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(posX - 2, posY - 2, posZ - 2, posX + 2, posY + 2, posZ + 2));
+        if (!world.isRemote && world.getTotalWorldTime() % 200 == 0) {
+            List<EntityPlayer> nearbyEntities = world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(posX - 2, posY - 2, posZ - 2, posX + 2, posY + 2, posZ + 2));
             for (EntityPlayer entity : nearbyEntities) {
                 ItemStack stack = entity.inventory.getCurrentItem();
                 if (stack != null && entity != player) {
-                    EntityItem item = new EntityItem(worldObj, player.posX, player.posY, player.posZ, stack);
+                    EntityItem item = new EntityItem(world, player.posX, player.posY, player.posZ, stack);
                     item.motionX = 0;
                     item.motionY = 0;
                     item.motionZ = 0;
                     AuraUtil.setItemDelay(item, 0);
-                    worldObj.spawnEntityInWorld(item);
+                    world.spawnEntity(item);
 
                     entity.inventory.setInventorySlotContents(entity.inventory.currentItem, null);
                 }

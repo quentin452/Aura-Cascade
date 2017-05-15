@@ -16,14 +16,14 @@ public class EntityExtinguisherFairy extends EntityFairy {
     @Override
     public void onEntityUpdate() {
         super.onEntityUpdate();
-        if (!worldObj.isRemote) {
+        if (!world.isRemote) {
             if (player.isBurning()) {
                 player.extinguish();
             }
             BlockPos pos = new BlockPos(this);
-            Block block = worldObj.getBlockState(pos).getBlock();
+            Block block = world.getBlockState(pos).getBlock();
             if (block.getMaterial(block.getDefaultState()) == Material.LAVA) {
-                worldObj.setBlockToAir(pos);
+                world.setBlockToAir(pos);
             }
         }
     }

@@ -37,7 +37,7 @@ public class EntityFairy extends Entity {
 
     public EntityFairy(World p_i1582_1_) {
         super(p_i1582_1_);
-        entityItemRender = new EntityItem(worldObj);
+        entityItemRender = new EntityItem(world);
     }
 
     @Override
@@ -83,8 +83,8 @@ public class EntityFairy extends Entity {
 
             phi %= 360;
             theta %= 360;
-            if (!worldObj.isRemote && worldObj.getTotalWorldTime() % 1000 == 0) {
-                ((WorldServer) worldObj).getEntityTracker().sendToAllTrackingEntity(this, AuraCascade.proxy.networkWrapper.getPacketFrom(new PacketFairyUpdate(this)));
+            if (!world.isRemote && world.getTotalWorldTime() % 1000 == 0) {
+                ((WorldServer) world).getEntityTracker().sendToTracking(this, AuraCascade.proxy.networkWrapper.getPacketFrom(new PacketFairyUpdate(this)));
             }
 
             double oldX = posX;
@@ -94,7 +94,7 @@ public class EntityFairy extends Entity {
             setPosition(entity.posX + getEffectiveRho() * Math.sin(phi) * Math.cos(theta), entity.posY + getEffectiveRho() * Math.sin(phi) * Math.sin(theta), player.posZ + getEffectiveRho() * Math.cos(phi));
 
             if (entityItemRender == null) {
-                entityItemRender = new EntityItem(worldObj);
+                entityItemRender = new EntityItem(world);
             }
             entityItemRender.setPosition(posX, posY, posZ);
             entityItemRender.motionX = oldX;
@@ -105,7 +105,7 @@ public class EntityFairy extends Entity {
             motionY = 0;
             motionZ = 0;
 
-        } else if (worldObj.isRemote) {
+        } else if (world.isRemote) {
             AuraCascade.proxy.networkWrapper.sendToServer(new PacketFairyRequestUpdate(this));
         } else {
             setDead();

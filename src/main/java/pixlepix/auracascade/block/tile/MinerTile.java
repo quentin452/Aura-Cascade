@@ -70,7 +70,7 @@ public class MinerTile extends ConsumerTile {
                 explosion.charge = 1;
                 explosion.lastCharged = worldObj.getTotalWorldTime();
                 explosion.bounce();
-                worldObj.spawnEntityInWorld(explosion);
+                worldObj.spawnEntity(explosion);
 
             }
 
@@ -85,7 +85,7 @@ public class MinerTile extends ConsumerTile {
                     for (int i = 0; i < oresSpawned; i++) {
                         ItemStack stack = OreDropManager.getOreToPut();
                         EntityItem item = new EntityItem(worldObj, pos.getX() + .5, pos.getY() + 1.5, pos.getZ() + .5, stack);
-                        worldObj.spawnEntityInWorld(item);
+                        worldObj.spawnEntity(item);
                     }
                 //    AuraCascade.analytics.eventDesign("consumerMinerLoot", AuraUtil.formatLocation(this), explosion.charge);
                 }

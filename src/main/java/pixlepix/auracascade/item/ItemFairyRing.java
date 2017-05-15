@@ -54,7 +54,7 @@ public class ItemFairyRing extends Item implements ITTinkererItem, IBauble {
                     fairy.setPosition(((EntityPlayer) entity).posX, ((EntityPlayer) entity).posY, ((EntityPlayer) entity).posZ);
                     fairy.player = (EntityPlayer) entity;
 
-                    ((EntityPlayer) entity).worldObj.spawnEntityInWorld(fairy);
+                    ((EntityPlayer) entity).worldObj.spawnEntity(fairy);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -162,7 +162,7 @@ public class ItemFairyRing extends Item implements ITTinkererItem, IBauble {
             Random random = new Random();
             for (int i : fairyCharms) {
                 EntityItem item = new EntityItem(world, player.posX + random.nextDouble() - .5D, player.posY + random.nextDouble() - .5D, player.posZ + random.nextDouble() - .5D, new ItemStack(BlockRegistry.getFirstItemFromClass(ItemFairyCharm.class), 1, i));
-                world.spawnEntityInWorld(item);
+                world.spawnEntity(item);
             }
             stack.getTagCompound().setIntArray("fairyList", new int[0]);
 

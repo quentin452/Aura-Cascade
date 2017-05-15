@@ -30,7 +30,7 @@ public class QuestManager {
                     if (!player.worldObj.isRemote) {
                         EntityItem entityItem = new EntityItem(player.worldObj, player.posX, player.posY, player.posZ, quest.result.copy());
                         AuraUtil.setItemDelay(entityItem, 0);
-                        player.worldObj.spawnEntityInWorld(entityItem);
+                        player.worldObj.spawnEntity(entityItem);
                         player.addChatComponentMessage(new TextComponentString("Quest \'" + quest.string + "\' Completed"));
                     } else {
                     	//TODO Fix sounds

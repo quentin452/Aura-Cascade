@@ -45,29 +45,29 @@ public class EntityMinerExplosion extends Entity {
     @Override
     public void onEntityUpdate() {
         super.onEntityUpdate();
-        if (!worldObj.isRemote && lastCharged + 100 < worldObj.getTotalWorldTime()) {
+        if (!world.isRemote && lastCharged + 100 < world.getTotalWorldTime()) {
             setDead();
 
         }
 
         if (isCollided) {
-            if (!worldObj.isRemote) {
+            if (!world.isRemote) {
                 explode();
                 bounce();
             } else {
-                //this.worldObj.spawnParticle("hugeexplosion", posX, posY, posZ, 0.0D, 0.0D, 0.0D);
+                //this.world.spawnParticle("hugeexplosion", posX, posY, posZ, 0.0D, 0.0D, 0.0D);
             }
         }
         moveEntity(motionX, motionY, motionZ);
-        if (worldObj.isRemote && worldObj.getTotalWorldTime() % 2 == 0) {
-            this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, posX, posY, posZ, 0.0D, 0.0D, 0.0D);
+        if (world.isRemote && world.getTotalWorldTime() % 2 == 0) {
+            this.world.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, posX, posY, posZ, 0.0D, 0.0D, 0.0D);
         }
     }
 
     public void explode() {
         int delay = (int) Math.max(0, (100 - 20 * Math.log10(charge)));
-        if (lastExplosion + delay < worldObj.getTotalWorldTime()) {
-            lastExplosion = worldObj.getTotalWorldTime();
+        if (lastExplosion + delay < world.getTotalWorldTime()) {
+            lastExplosion = world.getTotalWorldTime();
             BlockPos pos = new BlockPos(this);
 
             boolean contained = false;
@@ -76,19 +76,19 @@ public class EntityMinerExplosion extends Entity {
                 for (int j = -2; j < 3; j++) {
                     for (int k = -2; k < 3; k++) {
                         BlockPos pos_ = pos.add(i, j, k);
-                        Block block = worldObj.getBlockState(pos_).getBlock();
+                        Block block = world.getBlockState(pos_).getBlock();
                         if (block instanceof BlockExplosionContainer) {
                             contained = true;
                             Random r = new Random();
-                            int nextDamage = worldObj.getBlockState(pos_).getValue(BlockExplosionContainer.DAMAGE) + 1;
+                            int nextDamage = world.getBlockState(pos_).getValue(BlockExplosionContainer.DAMAGE) + 1;
                             if (r.nextDouble() > ((BlockExplosionContainer) block).getChanceToResist()) {
 
                                 if (nextDamage > 15) {
 
-                                    worldObj.setBlockToAir(pos_);
+                                    world.setBlockToAir(pos_);
                                 } else {
 
-                                    worldObj.setBlockState(pos_, worldObj.getBlockState(pos_).withProperty(BlockExplosionContainer.DAMAGE, nextDamage), 3);
+                                    world.setBlockState(pos_, world.getBlockState(pos_).withProperty(BlockExplosionContainer.DAMAGE, nextDamage), 3);
                                 }
                             }
                         }
@@ -96,7 +96,7 @@ public class EntityMinerExplosion extends Entity {
                 }
             }
             if (!contained) {
-                worldObj.createExplosion(this, posX, posY, posZ, 50F, true);
+                world.createExplosion(this, posX, posY, posZ, 50F, true);
                 setDead();
             }
         }

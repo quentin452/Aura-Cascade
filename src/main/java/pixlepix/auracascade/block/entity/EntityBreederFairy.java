@@ -20,12 +20,12 @@ public class EntityBreederFairy extends EntityFairy {
     @Override
     public void onEntityUpdate() {
         super.onEntityUpdate();
-        if (!worldObj.isRemote && worldObj.getTotalWorldTime() % 3 == 0) {
-            List<EntityAnimal> nearbyEntities = worldObj.getEntitiesWithinAABB(EntityAnimal.class, new AxisAlignedBB(posX - 1, posY - 1, posZ - 1, posX + 1, posY + 1, posZ + 1));
+        if (!world.isRemote && world.getTotalWorldTime() % 3 == 0) {
+            List<EntityAnimal> nearbyEntities = world.getEntitiesWithinAABB(EntityAnimal.class, new AxisAlignedBB(posX - 1, posY - 1, posZ - 1, posX + 1, posY + 1, posZ + 1));
             for (EntityAnimal entity : nearbyEntities) {
                 if (!entity.isInLove() && entity.getGrowingAge() == 0) {
                     entity.setInLove(player);
-                    AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(5, entity.posX, entity.posY, entity.posZ), new NetworkRegistry.TargetPoint(entity.worldObj.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
+                    AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(5, entity.posX, entity.posY, entity.posZ), new NetworkRegistry.TargetPoint(entity.world.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
                     break;
 
                 }
