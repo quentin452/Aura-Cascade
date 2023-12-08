@@ -5,10 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.WeightedRandom;
 import net.minecraftforge.oredict.OreDictionary;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by localmacaccount on 6/6/15.
@@ -97,7 +94,7 @@ public class OreDropManager {
 
     //Also Botania's code
     public static ItemStack getOreToPut() {
-        List<WeightedRandom.Item> values = new ArrayList<net.minecraft.util.WeightedRandom.Item>();
+        Collection<WeightedRandom.Item> values = new ArrayList();
         for (String s : oreNames.keySet())
             values.add(new StringRandomItem(oreNames.get(s), s));
 

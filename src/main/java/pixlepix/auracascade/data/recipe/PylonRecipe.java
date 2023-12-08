@@ -1,6 +1,7 @@
 package pixlepix.auracascade.data.recipe;
 
 import net.minecraft.item.ItemStack;
+import pixlepix.auracascade.data.AuraQuantity;
 import pixlepix.auracascade.registry.ThaumicTinkererRecipe;
 
 import java.util.ArrayList;
@@ -31,13 +32,13 @@ public class PylonRecipe extends ThaumicTinkererRecipe {
         PylonRecipeRegistry.registerRecipe(this);
     }
 
-    public int getAuraFromItem(ItemStack stack) {
+    public AuraQuantity getAuraFromItem(ItemStack stack) {
         for (PylonRecipeComponent component : componentList) {
             if (ItemStack.areItemStacksEqual(stack, component.itemStack)) {
                 return component.auraQuantity;
             }
         }
-        return 0;
+        return null;
     }
 
     public boolean matches(List<ItemStack> stacks) {
@@ -54,10 +55,10 @@ public class PylonRecipe extends ThaumicTinkererRecipe {
         }
         search:
         for (ItemStack curStack : stacks) {
-            Iterator<ItemStack> recipeStacksIter = recipeStacks.iterator();
+            Iterator recipeStacksIter = recipeStacks.iterator();
 
             while (recipeStacksIter.hasNext()) {
-                ItemStack curRecipeStack = recipeStacksIter.next();
+                ItemStack curRecipeStack = (ItemStack) recipeStacksIter.next();
                 if (ItemStack.areItemStacksEqual(curRecipeStack, curStack)) {
                     recipeStacksIter.remove();
                     continue search;

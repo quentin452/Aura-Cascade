@@ -2,12 +2,13 @@ package pixlepix.auracascade.item;
 
 import baubles.api.BaubleType;
 import baubles.api.IBauble;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import pixlepix.auracascade.data.EnumRainbowColor;
+import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.registry.CraftingBenchRecipe;
 import pixlepix.auracascade.registry.ITTinkererItem;
 import pixlepix.auracascade.registry.ThaumicTinkererRecipe;
@@ -45,7 +46,7 @@ public class ItemExplosionRing extends Item implements ITTinkererItem, IBauble {
 
     @Override
     public ThaumicTinkererRecipe getRecipeItem() {
-        return new CraftingBenchRecipe(new ItemStack(this), "GTG", "TRT", "GTG", 'R', ItemMaterial.getGem(EnumRainbowColor.RED), 'T', new ItemStack(Blocks.TNT), 'G', new ItemStack(Items.GUNPOWDER));
+        return new CraftingBenchRecipe(new ItemStack(this), "GTG", "TRT", "GTG", 'R', ItemMaterial.getGem(EnumAura.RED_AURA), 'T', new ItemStack(Blocks.tnt), 'G', new ItemStack(Items.gunpowder));
     }
 
     @Override
@@ -66,6 +67,11 @@ public class ItemExplosionRing extends Item implements ITTinkererItem, IBauble {
     @Override
     public void onUnequipped(ItemStack itemStack, EntityLivingBase entityLivingBase) {
 
+    }
+
+    @Override
+    public void registerIcons(IIconRegister register) {
+        itemIcon = register.registerIcon("aura:explosion_ring");
     }
 
     @Override

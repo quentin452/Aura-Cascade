@@ -1,5 +1,6 @@
 package pixlepix.auracascade.item;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.*;
@@ -7,7 +8,7 @@ import net.minecraft.entity.passive.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import pixlepix.auracascade.data.EnumRainbowColor;
+import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.registry.CraftingBenchRecipe;
 import pixlepix.auracascade.registry.ITTinkererItem;
 import pixlepix.auracascade.registry.ThaumicTinkererRecipe;
@@ -53,26 +54,34 @@ public class ItemTransmutingSword extends Item implements ITTinkererItem {
 
     @Override
     public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
-        if (!target.worldObj.isRemote) if (entityMap.get(target.getClass()) != null && target.getHealth() > 0) {
-            target.setDead();
-            Class<? extends Entity> clazz = entityMap.get(target.getClass());
-            Entity newEntity = null;
-            try {
-                newEntity = clazz.getConstructor(World.class).newInstance(target.worldObj);
-                newEntity.setPosition(target.posX, target.posY, target.posZ);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                e.printStackTrace();
+        if (!target.worldObj.isRemote) {
+            if (entityMap.get(target.getClass()) != null && target.getHealth() > 0) {
+                target.setDead();
+                Class clazz = entityMap.get(target.getClass());
+                Entity newEntity = null;
+                try {
+                    newEntity = (Entity) clazz.getConstructor(World.class).newInstance(target.worldObj);
+                    newEntity.setPosition(target.posX, target.posY, target.posZ);
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                }
+
+                target.worldObj.spawnEntityInWorld(newEntity);
+                if (newEntity instanceof EntitySlime && target instanceof EntitySlime) {
+                    ((EntitySlime) newEntity).setSlimeSize(((EntitySlime) target).getSlimeSize());
+                }
+                if (newEntity instanceof EntityLivingBase) {
+                    ((EntityLivingBase) newEntity).setHealth(Math.min(((EntityLivingBase) newEntity).getMaxHealth(), target.getHealth()));
+
+                }
             }
 
-            target.worldObj.spawnEntityInWorld(newEntity);
-            if (newEntity instanceof EntitySlime && target instanceof EntitySlime) {
-                // ((EntitySlime) newEntity).setSlimeSize((((EntitySlime) target).getSlimeSize()));
-                //TODO: This requires ASM, and seems fairly pointless.
-            }
-            if (newEntity instanceof EntityLivingBase) {
-                ((EntityLivingBase) newEntity).setHealth(Math.min(((EntityLivingBase) newEntity).getMaxHealth(), target.getHealth()));
-
-            }
         }
         return super.hitEntity(stack, attacker, target);
     }
@@ -98,7 +107,12 @@ public class ItemTransmutingSword extends Item implements ITTinkererItem {
     }
 
     @Override
+    public void registerIcons(IIconRegister register) {
+        itemIcon = register.registerIcon("aura:transmutingSword");
+    }
+
+    @Override
     public ThaumicTinkererRecipe getRecipeItem() {
-        return new CraftingBenchRecipe(new ItemStack(this), " I ", " I ", " G ", 'I', ItemMaterial.getIngot(EnumRainbowColor.VIOLET), 'G', ItemMaterial.getGem(EnumRainbowColor.VIOLET));
+        return new CraftingBenchRecipe(new ItemStack(this), " I ", " I ", " G ", 'I', ItemMaterial.getIngot(EnumAura.VIOLET_AURA), 'G', ItemMaterial.getGem(EnumAura.VIOLET_AURA));
     }
 }

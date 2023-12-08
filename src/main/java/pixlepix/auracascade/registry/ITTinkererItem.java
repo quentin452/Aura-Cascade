@@ -7,12 +7,13 @@ import java.util.ArrayList;
  */
 public interface ITTinkererItem extends ITTinkererRegisterable {
 
-    ArrayList<Object> getSpecialParameters();
+    public ArrayList<Object> getSpecialParameters();
 
-    String getItemName();
+    public String getItemName();
 
-    boolean shouldRegister();
+    @SuppressWarnings("SameReturnValue")
+    public boolean shouldRegister();
 
-    boolean shouldDisplayInTab();
+    public boolean shouldDisplayInTab();
 
 }

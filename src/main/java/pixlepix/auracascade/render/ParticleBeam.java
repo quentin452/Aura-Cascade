@@ -1,12 +1,12 @@
 package pixlepix.auracascade.render;
 
-import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.world.World;
 
 /**
  * Created by pixlepix on 11/30/14.
  */
-public class ParticleBeam extends Particle {
+public class ParticleBeam extends EntityFX {
 
     public ParticleBeam(World par1World, double x, double y, double z, float red, float blue, float green, boolean longLived) {
         this(par1World, x, y, z, red, blue, green);
@@ -32,7 +32,7 @@ public class ParticleBeam extends Particle {
 
         this.particleScale *= 2F;
         this.particleMaxAge = (int) (6.0D / (Math.random() * 0.8D + 0.6D));
-        this.isCollided = false;
-        this.isExpired = false;
+        this.noClip = false;
+        this.noClip = false;
     }
 }

@@ -8,18 +8,19 @@ import java.util.ArrayList;
 /**
  * Created by localmacaccount on 6/11/14.
  */
+@SuppressWarnings("SameReturnValue")
 public interface ITTinkererBlock extends ITTinkererRegisterable {
 
-    ArrayList<Object> getSpecialParameters();
+    public ArrayList<Object> getSpecialParameters();
 
-    String getBlockName();
+    public String getBlockName();
 
-    boolean shouldRegister();
+    public boolean shouldRegister();
 
-    boolean shouldDisplayInTab();
+    public boolean shouldDisplayInTab();
 
-    Class<? extends ItemBlock> getItemBlock();
+    public Class<? extends ItemBlock> getItemBlock();
 
-    Class<? extends TileEntity> getTileEntity();
+    public Class<? extends TileEntity> getTileEntity();
 
 }

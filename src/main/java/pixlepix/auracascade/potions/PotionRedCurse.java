@@ -1,14 +1,13 @@
 package pixlepix.auracascade.potions;
 
-import net.minecraft.client.renderer.texture.TextureMap;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import pixlepix.auracascade.data.EnumRainbowColor;
+import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.item.ItemAngelsteelSword;
 
 import java.util.Random;
@@ -17,8 +16,8 @@ import java.util.Random;
  * Created by localmacaccount on 1/19/15.
  */
 public class PotionRedCurse extends Potion {
-    public PotionRedCurse() {
-        super(true, EnumRainbowColor.RED.color.getHex());
+    public PotionRedCurse(int id) {
+        super(id, true, EnumAura.RED_AURA.color.getHex());
         setPotionName("Red Curse");
 
     }
@@ -26,8 +25,8 @@ public class PotionRedCurse extends Potion {
     @Override
     @SideOnly(Side.CLIENT)
     public void renderInventoryEffect(int x, int y, PotionEffect effect, net.minecraft.client.Minecraft mc) {
-        mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-        mc.getRenderItem().renderItemIntoGUI(ItemAngelsteelSword.getStackFirstDegree(EnumRainbowColor.RED), x + 8, y + 8);
+        Minecraft.getMinecraft().renderEngine.bindTexture(Minecraft.getMinecraft().renderEngine.getResourceLocation(1));
+        mc.currentScreen.drawTexturedModelRectFromIcon(x + 8, y + 8, ItemAngelsteelSword.getStackFirstDegree(EnumAura.RED_AURA).getIconIndex(), 16, 16);
     }
 
     @Override
@@ -37,11 +36,17 @@ public class PotionRedCurse extends Potion {
 
     @Override
     public void performEffect(EntityLivingBase entity, int amplifier) {
-        BlockPos pos = new BlockPos(entity);
+        int x = (int) entity.posX;
+        int y = (int) entity.posY;
+        int z = (int) entity.posZ;
 
-        for (BlockPos pos_ : BlockPos.getAllInBox(pos.add(-5, -2, -5), pos.add(6, 3, 6))) {
-            if (entity.worldObj.isAirBlock(pos_) && Blocks.FIRE.canPlaceBlockAt(entity.worldObj, pos_)) {
-                entity.worldObj.setBlockState(pos_, Blocks.FIRE.getDefaultState());
+        for (int i = x - 5; i < x + 6; i++) {
+            for (int j = y - 2; j < y + 3; j++) {
+                for (int k = z - 5; k < z + 6; k++) {
+                    if (entity.worldObj.isAirBlock(i, j, k) && Blocks.fire.canPlaceBlockAt(entity.worldObj, i, j, k)) {
+                        entity.worldObj.setBlock(i, j, k, Blocks.fire);
+                    }
+                }
             }
         }
     }

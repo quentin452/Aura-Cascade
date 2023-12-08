@@ -2,20 +2,15 @@ package pixlepix.auracascade.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import pixlepix.auracascade.registry.ITTinkererBlock;
 import pixlepix.auracascade.registry.ThaumicTinkererRecipe;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -24,30 +19,27 @@ import java.util.Random;
 public class FairyTorch extends Block implements ITTinkererBlock {
 
     public final String name = "fairyTorch";
-    private static final AxisAlignedBB AABB = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+
     public FairyTorch() {
-        super(Material.GLASS);
+        super(Material.glass);
         setTickRandomly(true);
+
         setLightLevel(1F);
+        setBlockBounds(0, 0, 0, 0, 0, 0);
     }
 
     @Override
-    public EnumBlockRenderType getRenderType(IBlockState state) {
-        return EnumBlockRenderType.MODEL;
-    }
-
-    @Override
-    public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos) {
+    public boolean isReplaceable(IBlockAccess world, int x, int y, int z) {
         return true;
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube() {
         return false;
     }
 
     @Override
-    public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public boolean isAir(IBlockAccess world, int x, int y, int z) {
         return true;
     }
 
@@ -57,15 +49,15 @@ public class FairyTorch extends Block implements ITTinkererBlock {
     }
 
     @Override
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
         return new ArrayList<ItemStack>();
     }
 
     @Override
-    public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
-        super.updateTick(world, pos, state, rand);
+    public void updateTick(World world, int x, int y, int z, Random rand) {
+        super.updateTick(world, x, y, z, rand);
         if (!world.isRemote) {
-            world.setBlockToAir(pos);
+            world.setBlockToAir(x, y, z);
         }
     }
 
@@ -108,8 +100,4 @@ public class FairyTorch extends Block implements ITTinkererBlock {
     public int getCreativeTabPriority() {
         return 0;
     }
-    @Override
-   	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
-   		return AABB;
-   	}
 }

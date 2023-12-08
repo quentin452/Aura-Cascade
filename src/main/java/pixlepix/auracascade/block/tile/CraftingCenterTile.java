@@ -1,12 +1,14 @@
 package pixlepix.auracascade.block.tile;
 
+import cpw.mods.fml.common.network.NetworkRegistry;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.common.util.ForgeDirection;
 import pixlepix.auracascade.AuraCascade;
+import pixlepix.auracascade.data.AuraQuantity;
+import pixlepix.auracascade.data.CoordTuple;
+import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.data.recipe.PylonRecipe;
 import pixlepix.auracascade.data.recipe.PylonRecipeRegistry;
 import pixlepix.auracascade.network.PacketBurst;
@@ -20,11 +22,11 @@ import java.util.List;
  */
 public class CraftingCenterTile extends TileEntity {
 
-    public static List<EnumFacing> pedestalRelativeLocations = Arrays.asList(EnumFacing.HORIZONTALS);
+    public static List<ForgeDirection> pedestalRelativeLocations = Arrays.asList(ForgeDirection.EAST, ForgeDirection.NORTH, ForgeDirection.SOUTH, ForgeDirection.WEST);
 
     public boolean pedestalsConnected() {
-        for (EnumFacing direction : pedestalRelativeLocations) {
-            if (!(worldObj.getTileEntity(getPos().offset(direction)) instanceof AuraTilePedestal)) {
+        for (ForgeDirection direction : pedestalRelativeLocations) {
+            if (!(new CoordTuple(this).add(direction).getTile(worldObj) instanceof AuraTilePedestal)) {
                 return false;
             }
         }
@@ -36,8 +38,8 @@ public class CraftingCenterTile extends TileEntity {
             return null;
         }
         List<ItemStack> stacks = new ArrayList<ItemStack>();
-        for (EnumFacing direction : pedestalRelativeLocations) {
-            AuraTilePedestal pedestal = (AuraTilePedestal) worldObj.getTileEntity(getPos().offset(direction));
+        for (ForgeDirection direction : pedestalRelativeLocations) {
+            AuraTilePedestal pedestal = (AuraTilePedestal) new CoordTuple(this).add(direction).getTile(worldObj);
             stacks.add(pedestal.itemStack);
         }
         for (PylonRecipe recipe : PylonRecipeRegistry.recipes) {
@@ -56,23 +58,24 @@ public class CraftingCenterTile extends TileEntity {
             return;
         }
         boolean valid = true;
-        for (EnumFacing direction : pedestalRelativeLocations) {
-            AuraTilePedestal pedestal = (AuraTilePedestal) worldObj.getTileEntity(getPos().offset(direction));
-            int targetAura = recipe.getAuraFromItem(pedestal.itemStack);
-            if (targetAura > pedestal.powerReceived) {
+        for (ForgeDirection direction : pedestalRelativeLocations) {
+            AuraTilePedestal pedestal = (AuraTilePedestal) new CoordTuple(this).add(direction).getTile(worldObj);
+            AuraQuantity targetAura = recipe.getAuraFromItem(pedestal.itemStack);
+            if (targetAura.getNum() > pedestal.powerReceived) {
                 valid = false;
             }
         }
         if (valid) {
-            for (EnumFacing direction : pedestalRelativeLocations) {
-                AuraTilePedestal pedestal = (AuraTilePedestal) worldObj.getTileEntity(getPos().offset(direction));
+            for (ForgeDirection direction : pedestalRelativeLocations) {
+                AuraTilePedestal pedestal = (AuraTilePedestal) new CoordTuple(this).add(direction).getTile(worldObj);
                 //Particles and sparklez
-                for (EnumFacing beamDir : EnumFacing.VALUES) {
+                for (ForgeDirection beamDir : ForgeDirection.VALID_DIRECTIONS) {
                     if (beamDir != direction && beamDir != direction.getOpposite()) {
-                        BlockPos mid = pedestal.getPos().offset(beamDir).offset(direction);
+                        CoordTuple mid = new CoordTuple(pedestal).add(beamDir).add(direction);
+                        EnumAura aura = recipe.getAuraFromItem(pedestal.itemStack).getType();
+                        burst(mid, new CoordTuple(pedestal), "happyVillager", aura, 1);
 
-                        burst(mid, pedestal.getPos(), "happyVillager");
-                        burst(mid, getPos(), "happyVillager");
+                        burst(mid, new CoordTuple(this), "happyVillager", aura, 1);
 
                     }
                 }
@@ -81,19 +84,13 @@ public class CraftingCenterTile extends TileEntity {
                 pedestal.powerReceived = 0;
             }
             ItemStack loot = recipe.result.copy();
-
-            //AuraCascade.analytics.eventDesign("vortexCraft", loot.getUnlocalizedName());
-            EntityItem entityDrop = new EntityItem(worldObj, getPos().getX() + .5, getPos().getY() + 2, getPos().getZ() + .5, loot);
+            EntityItem entityDrop = new EntityItem(worldObj, xCoord + .5, yCoord + 2, zCoord + .5, loot);
             worldObj.spawnEntityInWorld(entityDrop);
-            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(3, getPos().getX() + .5, getPos().getY() + 2, getPos().getZ() + .5), new NetworkRegistry.TargetPoint(worldObj.provider.getDimension(), getPos().getX(),getPos().getY(), getPos().getZ(), 32));
-
+            AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(3, xCoord + .5, yCoord + 2, zCoord + .5), new NetworkRegistry.TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 32));
         }
     }
 
-    public void burst(BlockPos origin, BlockPos target, String particle) {
-
-        AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(origin, target, particle, 1, 1, 1), new NetworkRegistry.TargetPoint(worldObj.provider.getDimension(), getPos().getX(),getPos().getY(), getPos().getZ(), 32));
-
+    public void burst(CoordTuple origin, CoordTuple target, String particle, EnumAura aura, double composition) {
+        AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(origin, target, particle, aura.r, aura.g, aura.b, composition), new NetworkRegistry.TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 32));
     }
-
 }

@@ -2,9 +2,9 @@ package pixlepix.auracascade.block.tile;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRedstoneWire;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.util.ForgeDirection;
 import pixlepix.auracascade.AuraCascade;
+import pixlepix.auracascade.data.CoordTuple;
 import pixlepix.auracascade.main.Config;
 
 /**
@@ -14,22 +14,22 @@ public class AuraTilePumpRedstone extends AuraTilePumpBase {
 
 
     @Override
-    public void update() {
-        super.update();
+    public void updateEntity() {
+        super.updateEntity();
         if (pumpPower == 0) {
-            for (EnumFacing direction : EnumFacing.VALUES) {
+            for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
                 for (int i = 1; i < 16; i++) {
-                    BlockPos pos = getPos().offset(direction, i);
-                    Block block = worldObj.getBlockState(pos).getBlock();
-                    if (block instanceof BlockRedstoneWire && worldObj.getBlockState(pos).getValue(BlockRedstoneWire.POWER) > 0) {
+                    CoordTuple tuple = new CoordTuple(this).add(direction, i);
+                    Block block = tuple.getBlock(worldObj);
+                    if (block instanceof BlockRedstoneWire && tuple.getMeta(worldObj) > 0) {
                         addFuel((int) (Config.pumpRedstoneDuration * Math.pow(1.4, i)), Config.pumpRedstoneSpeed);
                         if (!worldObj.isRemote) {
                             for (int j = 0; j < 5; j++) {
-                                AuraCascade.proxy.addBlockDestroyEffects(pos);
+                                AuraCascade.proxy.addBlockDestroyEffects(tuple);
                             }
                         }
 
-                        worldObj.setBlockToAir(pos);
+                        tuple.setBlockToAir(worldObj);
                     } else {
                         break;
                     }

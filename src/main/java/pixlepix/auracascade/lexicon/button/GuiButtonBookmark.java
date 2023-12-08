@@ -1,8 +1,8 @@
 package pixlepix.auracascade.lexicon.button;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 import pixlepix.auracascade.lexicon.GuiLexicon;
 import pixlepix.auracascade.lexicon.VazkiiRenderHelper;
 
@@ -21,16 +21,16 @@ public class GuiButtonBookmark extends GuiButtonLexicon {
     @Override
     public void drawButton(Minecraft mc, int par2, int par3) {
         gui.drawBookmark(xPosition, yPosition, displayString, false);
-        hovered = par2 >= xPosition && par3 >= yPosition && par2 < xPosition + width && par3 < yPosition + height;
-        int k = getHoverState(hovered);
+        field_146123_n = par2 >= xPosition && par3 >= yPosition && par2 < xPosition + width && par3 < yPosition + height;
+        int k = getHoverState(field_146123_n);
 
-        List<String> tooltip = new ArrayList<String>();
+        List<String> tooltip = new ArrayList();
         if (displayString.equals("+"))
-            tooltip.add(I18n.translateToLocal("auramisc.clickToAdd"));
+            tooltip.add(StatCollector.translateToLocal("auramisc.clickToAdd"));
         else {
-            tooltip.add(String.format(I18n.translateToLocal("auramisc.bookmark"), id - GuiLexicon.BOOKMARK_START + 1));
-            tooltip.add(TextFormatting.GRAY + I18n.translateToLocal("auramisc.clickToSee"));
-            tooltip.add(TextFormatting.GRAY + I18n.translateToLocal("auramisc.shiftToRemove"));
+            tooltip.add(String.format(StatCollector.translateToLocal("auramisc.bookmark"), id - GuiLexicon.BOOKMARK_START + 1));
+            tooltip.add(EnumChatFormatting.GRAY + StatCollector.translateToLocal("auramisc.clickToSee"));
+            tooltip.add(EnumChatFormatting.GRAY + StatCollector.translateToLocal("auramisc.shiftToRemove"));
         }
 
         int tooltipY = (tooltip.size() + 1) * 5;

@@ -3,9 +3,9 @@ package pixlepix.auracascade.block.tile;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.util.ForgeDirection;
 import pixlepix.auracascade.AuraCascade;
+import pixlepix.auracascade.data.CoordTuple;
 import pixlepix.auracascade.main.Config;
 
 /**
@@ -27,21 +27,21 @@ public class AuraTilePumpLight extends AuraTilePumpBase {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void updateEntity() {
+        super.updateEntity();
         if (pumpPower > 0) {
             hasSearched = false;
         }
 
         if (pumpPower == 0 && (!hasSearched || worldObj.getTotalWorldTime() % 1200 == 0)) {
-            for (EnumFacing direction : EnumFacing.VALUES) {
-                BlockPos pos = getPos().offset(direction);
-                if (consumeLightSource(pos, Blocks.GLOWSTONE)) {
+            for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+                CoordTuple tuple = new CoordTuple(this).add(direction);
+                if (consumeLightSource(tuple, Blocks.glowstone)) {
 
                     addFuel(Config.pumpGlowstoneDuration, Config.pumpGlowstoneSpeed);
                     break;
                 }
-                if (consumeLightSource(pos, Blocks.TORCH)) {
+                if (consumeLightSource(tuple, Blocks.torch)) {
                     addFuel(Config.pumpTorchDuration, Config.pumpTorchSpeed);
                     break;
                 }
@@ -50,15 +50,15 @@ public class AuraTilePumpLight extends AuraTilePumpBase {
         }
     }
 
-    public boolean consumeLightSource(BlockPos pos, Block block) {
-        if (worldObj.getBlockState(pos).getBlock() == block) {
+    public boolean consumeLightSource(CoordTuple tuple, Block block) {
+        if (tuple.getBlock(worldObj) == block) {
             if (!worldObj.isRemote) {
                 for (int j = 0; j < 5; j++) {
-                    AuraCascade.proxy.addBlockDestroyEffects(pos);
+                    AuraCascade.proxy.addBlockDestroyEffects(tuple);
                 }
             }
 
-            worldObj.setBlockToAir(pos);
+            tuple.setBlockToAir(worldObj);
             return true;
         }
         return false;

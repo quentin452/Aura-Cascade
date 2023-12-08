@@ -1,48 +1,38 @@
-*.class
-dist
-download
-push.sh
-remotebuild.py
-secret.properties
-
-## gradle
-/.gradle
-/build
-/eclipse
-/gradlew.bat
-
-## ForgeGradle
-/run
-/out
-/ForgeModule
-/libs/downloads
-/libs/forgelibs
-## idea
+.gradle
+.settings
+/.idea/
+/.vscode/
+/run/
+/build/
+/eclipse/
+.classpath
+.project
+/bin/
+/config/
+/crash-reports/
+/logs/
+options.txt
+/saves/
+usernamecache.json
+banned-ips.json
+banned-players.json
+eula.txt
+ops.json
+server.properties
+servers.dat
+usercache.json
+whitelist.json
+/out/
 *.iml
 *.ipr
 *.iws
-
-## eclipse
-/.settings
-/.metadata
-/.classpath
-/.project
-/bin
-/.idea
-/client/
-/Server/
-/classes/
-## misc
-/libs/Thaumcraft-deobf*.jar*
-/libs/*1.7.10*
-TCDEOBF*
-## Ignore OS cache files
+src/main/resources/mixins.*([!.]).json
+*.bat
 *.DS_Store
-_MACOSX
-Thumbs.db
-/forgelibs
-
-## Ignore unnecessary files
-*.log
-*.lck
-/target/
+!gradlew.bat
+.factorypath
+addon.local.gradle
+addon.local.gradle.kts
+addon.late.local.gradle
+addon.late.local.gradle.kts
+layout.json

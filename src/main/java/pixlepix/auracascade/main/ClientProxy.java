@@ -1,22 +1,21 @@
 package pixlepix.auracascade.main;
 
+import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.particle.EffectRenderer;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import pixlepix.auracascade.KeyBindings;
-import pixlepix.auracascade.ModelHandler;
 import pixlepix.auracascade.block.entity.EntityFairy;
 import pixlepix.auracascade.block.tile.AuraTilePedestal;
+import pixlepix.auracascade.data.CoordTuple;
 import pixlepix.auracascade.lexicon.*;
 import pixlepix.auracascade.main.event.ClientEventHandler;
 import pixlepix.auracascade.render.OverlayRender;
@@ -32,21 +31,16 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void preInit(FMLPreInitializationEvent evt) {
-        super.preInit(evt);
-        ModelHandler.registerModels();
-    }
-
-    @Override
     public void init(FMLInitializationEvent event) {
         super.init(event);
-        MinecraftForge.EVENT_BUS.register(new ClientTickHandler());
+        FMLCommonHandler.instance().bus().register(new ClientTickHandler());
         MinecraftForge.EVENT_BUS.register(new OverlayRender());
 
         KeyBindings.init();
 
         ClientEventHandler clientEventHandler = new ClientEventHandler();
         MinecraftForge.EVENT_BUS.register(clientEventHandler);
+        FMLCommonHandler.instance().bus().register(clientEventHandler);
 
 
     }
@@ -60,7 +54,7 @@ public class ClientProxy extends CommonProxy {
     public void postInit(FMLPostInitializationEvent event) {
         super.postInit(event);
         ClientRegistry.bindTileEntitySpecialRenderer(AuraTilePedestal.class, new RenderPedestal());
-        RenderingRegistry.registerEntityRenderingHandler(EntityFairy.class, new RenderEntityFairy(Minecraft.getMinecraft().getRenderManager()));
+        RenderingRegistry.registerEntityRenderingHandler(EntityFairy.class, new RenderEntityFairy());
     }
 
     @Override
@@ -69,7 +63,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public ParticleManager getEffectRenderer() {
+    public EffectRenderer getEffectRenderer() {
         return Minecraft.getMinecraft().effectRenderer;
     }
 
@@ -80,8 +74,11 @@ public class ClientProxy extends CommonProxy {
     }
 
 
-    public void addBlockDestroyEffects(BlockPos pos) {
-        Minecraft.getMinecraft().effectRenderer.addBlockDestroyEffects(pos, Minecraft.getMinecraft().theWorld.getBlockState(pos));
+    public void addBlockDestroyEffects(CoordTuple tuple) {
+
+        Minecraft.getMinecraft().effectRenderer.addBlockDestroyEffects(tuple.getX(), tuple.getY(), tuple.getZ(), tuple.getBlock(Minecraft.getMinecraft().theWorld), tuple.getMeta(Minecraft.getMinecraft().theWorld));
+
+
     }
 
     @Override
@@ -90,15 +87,11 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void addEffectBypassingLimit(Particle entityFX) {
-        //if (Config.overrideMaxParticleLimit) {
-        if(true){
-         //  Minecraft.getMinecraft().effectRenderer.fxLayers[entityFX.getFXLayer()][entityFX.particleAlpha != 1 ? 0 : 1].add(entityFX);
-          //  Minecraft.getMinecraft().effectRenderer.fxLayers[entityFX.getFXLayer()][entityFX.particleAlpha != 1 ? 0 : 1].add(entityFX);
-            Minecraft.getMinecraft().effectRenderer.addEffect(entityFX);
+    public void addEffectBypassingLimit(EntityFX entityFX) {
+        if (Config.overrideMaxParticleLimit) {
+            Minecraft.getMinecraft().effectRenderer.fxLayers[entityFX.getFXLayer()].add(entityFX);
         } else {
-        	//TODO Fix the alternative to the config.
-             //Minecraft.getMinecraft().theWorld.spawnEntityInWorld(entityFX);
+            Minecraft.getMinecraft().theWorld.spawnEntityInWorld(entityFX);
         }
     }
 }

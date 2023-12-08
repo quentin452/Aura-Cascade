@@ -1,6 +1,6 @@
 package pixlepix.auracascade.main;
 
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.StatCollector;
 
 /**
  * Simple color enum for adding colors to in-game GUI strings of text.
@@ -40,7 +40,7 @@ public enum EnumColor {
     public String unlocalizedName;
     public String dyeName;
 
-    EnumColor(String s, String n, String dye, int[] rgb, int meta) {
+    private EnumColor(String s, String n, String dye, int[] rgb, int meta) {
         code = s;
         unlocalizedName = n;
         dyeName = dye;
@@ -59,11 +59,11 @@ public enum EnumColor {
      * @return localized name
      */
     public String getLocalizedName() {
-        return I18n.translateToLocal("aura." + unlocalizedName);
+        return StatCollector.translateToLocal("color." + unlocalizedName);
     }
 
     public String getDyeName() {
-        return I18n.translateToLocal("dye." + unlocalizedName);
+        return StatCollector.translateToLocal("dye." + unlocalizedName);
     }
 
     public String getOreDictName() {

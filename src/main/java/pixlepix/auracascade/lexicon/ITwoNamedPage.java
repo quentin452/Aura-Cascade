@@ -17,8 +17,8 @@ package pixlepix.auracascade.lexicon;
  */
 public interface ITwoNamedPage {
 
-    String getSecondUnlocalizedName();
+    public String getSecondUnlocalizedName();
 
-    void setSecondUnlocalizedName(String name);
+    public void setSecondUnlocalizedName(String name);
 
 }

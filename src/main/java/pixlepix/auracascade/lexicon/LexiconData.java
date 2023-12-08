@@ -12,27 +12,32 @@
 package pixlepix.auracascade.lexicon;
 
 
+import cpw.mods.fml.common.ModAPIManager;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.ModAPIManager;
 import pixlepix.auracascade.QuestManager;
 import pixlepix.auracascade.block.*;
 import pixlepix.auracascade.block.entity.*;
-import pixlepix.auracascade.data.EnumRainbowColor;
+import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.data.Quest;
 import pixlepix.auracascade.data.recipe.PylonRecipe;
 import pixlepix.auracascade.data.recipe.PylonRecipeRegistry;
 import pixlepix.auracascade.item.*;
+import pixlepix.auracascade.item.books.*;
 import pixlepix.auracascade.lexicon.page.*;
-import pixlepix.auracascade.registry.*;
+import pixlepix.auracascade.main.Config;
+import pixlepix.auracascade.registry.BlockRegistry;
+import pixlepix.auracascade.registry.CraftingBenchRecipe;
+import pixlepix.auracascade.registry.ITTinkererRegisterable;
+import pixlepix.auracascade.registry.ThaumicTinkererRecipeMulti;
 
 public final class LexiconData {
 
     public static CraftingBenchRecipe getRecipeFromFairy(Class<? extends EntityFairy> clazz) {
         int num = 0;
         for (int i = 0; i < ItemFairyCharm.fairyClasses.length; i++) {
-            Class<?> clazzCompare = ItemFairyCharm.fairyClasses[i];
+            Class clazzCompare = ItemFairyCharm.fairyClasses[i];
             if (clazzCompare.equals(clazz)) {
                 num = i;
                 break;
@@ -45,18 +50,18 @@ public final class LexiconData {
     public static void init() {
         //Add categories
         LexiconCategory categoryQuest = null;
-        //TODO bring this back
-        //if (Config.questline)
-        if(false){
-            categoryQuest = CategoryManager.categoryQuest = new LexiconCategory("Quests").setIcon(new ItemStack(Items.DIAMOND_SWORD));
+        if (Config.questline) {
+            categoryQuest = CategoryManager.categoryQuest = new LexiconCategory("Quests").setIcon(new ItemStack(Items.diamond_sword));
             CategoryManager.addCategory(categoryQuest);
         }
 
-        LexiconCategory categoryWalkthrough = CategoryManager.categoryWalkthrough = new LexiconCategory("Walkthrough").setIcon(new ItemStack(Items.WOODEN_PICKAXE));
+        LexiconCategory categoryWalkthrough = CategoryManager.categoryWalkthrough = new LexiconCategory("Walkthrough").setIcon(new ItemStack(Items.wooden_pickaxe));
         CategoryManager.addCategory(categoryWalkthrough);
 
         LexiconCategory categoryBasics = CategoryManager.categoryBasics = new LexiconCategory("Basics").setIcon(new ItemStack(AuraBlock.getBlockFromName("")));
         CategoryManager.addCategory(categoryBasics);
+        LexiconCategory categoryAuraColors = CategoryManager.categoryAuraColors = new LexiconCategory("Special Aura Colors").setIcon(new ItemStack(BlockRegistry.getFirstItemFromClass(ItemAuraCrystal.class), 1, 2));
+        CategoryManager.addCategory(categoryAuraColors);
         LexiconCategory categoryAuraNodes = CategoryManager.categoryAuraNodes = new LexiconCategory("Special Aura Nodes").setIcon(new ItemStack(AuraBlock.getBlockFromName("capacitor")));
         CategoryManager.addCategory(categoryAuraNodes);
         LexiconCategory categoryConsumers = CategoryManager.categoryConsumers = new LexiconCategory("Power Consumers").setIcon(new ItemStack(ConsumerBlock.getBlockFromName("mob")));
@@ -71,8 +76,7 @@ public final class LexiconData {
         CategoryManager.addCategory(categoryEnchants);
 
         //Procedurally generate quest entries
-        //TODO questline bring back
-        if (false) {
+        if (Config.questline) {
             for (Quest quest : QuestManager.quests) {
                 int id = quest.id;
                 new LexiconEntryQuest((id > 9 ? "" : "0") + id + "quest", categoryQuest, quest).setLexiconPages(new PageText("Desc"), new PageQuest(quest));
@@ -86,7 +90,7 @@ public final class LexiconData {
         new BLexiconEntry("tutorial", categoryWalkthrough).setPriority().setLexiconPages(new PageTutorial("0"));
         new BLexiconEntry("basics", categoryBasics).setPriority().setLexiconPages(new PageText("0"), new PageText("1")).tutorial();
         new BLexiconEntry("auraFlow", categoryBasics).setLexiconPages(new PageText("0"), new PageText("1"),
-                new PageCraftingRecipe("2", (OreCraftingBenchRecipe)BlockRegistry.getRecipe(itemAuraCrystal)),
+                new PageCraftingRecipe("2", ((ThaumicTinkererRecipeMulti) BlockRegistry.getRecipe(itemAuraCrystal)).getIRecipies(0, 1)),
                 new PageCraftingRecipe("3", (CraftingBenchRecipe) BlockRegistry.getRecipe(AuraBlock.getBlockFromName("")))).tutorial();
         new BLexiconEntry("power", categoryBasics).setLexiconPages(new PageText("0"), new PageText("1")).setPriority().tutorial();
         new BLexiconEntry("pumps", categoryBasics).setLexiconPages(new PageText("0"), new PageText("1"), new PageText("2"),
@@ -96,24 +100,24 @@ public final class LexiconData {
         new BLexiconEntry("furnace", categoryConsumers).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", (CraftingBenchRecipe) BlockRegistry.getRecipe(ConsumerBlock.getBlockFromName("furnace")))).tutorial();
         new BLexiconEntry("dye", categoryConsumers).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", (CraftingBenchRecipe) BlockRegistry.getRecipe(ConsumerBlock.getBlockFromName("dye")))).tutorial();
 
-        new BLexiconEntry("materials", categoryBasics).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", BlockRegistry.getRecipe(ConsumerBlock.getBlockFromName("ore"))), new PageText("2"), new PageText("3"), new PagePylon("4", PylonRecipeRegistry.getRecipe(ItemMaterial.getGem(EnumRainbowColor.WHITE))), new PageText("5")
+        new BLexiconEntry("materials", categoryBasics).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", BlockRegistry.getRecipe(ConsumerBlock.getBlockFromName("ore"))), new PageText("2"), new PageText("3"), new PagePylon("4", PylonRecipeRegistry.getRecipe(ItemMaterial.getGem(EnumAura.WHITE_AURA))), new PageText("5")
                 , new PageText("6"), new PageText("7"), new PageCraftingRecipe("8", BlockRegistry.getRecipe(ConsumerBlock.getBlockFromName("oreAdv")))).tutorial();
 
         new BLexiconEntry("crafting", categoryConsumers).tutorial().setPriority().setLexiconPages(new PageText("0"), new PageText("1"),
                 new PageCraftingRecipe("2", (CraftingBenchRecipe) BlockRegistry.getRecipe(AuraBlock.getBlockFromName("craftingCenter"))),
                 new PageCraftingRecipe("3", (CraftingBenchRecipe) BlockRegistry.getRecipe(AuraBlock.getBlockFromName("craftingPedestal"))),
-                new PagePylon("4", PylonRecipeRegistry.getRecipe(new ItemStack(Items.LEATHER))),
-                new PagePylon("5", PylonRecipeRegistry.getRecipe(new ItemStack(Items.BLAZE_POWDER, 20))),
-                new PagePylon("6", PylonRecipeRegistry.getRecipe(new ItemStack(Items.SADDLE, 1))),
-                new PagePylon("7", PylonRecipeRegistry.getRecipe(new ItemStack(Items.ENDER_EYE, 2))),
-                new PagePylon("8", PylonRecipeRegistry.getRecipe(new ItemStack(Items.ARROW, 8))),
-                new PagePylon("9", PylonRecipeRegistry.getRecipe(new ItemStack(Blocks.RAIL, 32))),
-                new PagePylon("10", PylonRecipeRegistry.getRecipe(new ItemStack(Blocks.LAPIS_BLOCK, 1))),
-                new PagePylon("11", PylonRecipeRegistry.getRecipe(new ItemStack(Items.REPEATER))),
-                new PagePylon("12", PylonRecipeRegistry.getRecipe(new ItemStack(Items.COMPARATOR))),
-                new PagePylon("13", PylonRecipeRegistry.getRecipe(new ItemStack(Blocks.SOUL_SAND))),
-                new PagePylon("14", PylonRecipeRegistry.getRecipe(new ItemStack(Blocks.GOLD_BLOCK))),
-                new PagePylon("15", PylonRecipeRegistry.getRecipe(new ItemStack(Blocks.DIAMOND_BLOCK))));
+                new PagePylon("4", PylonRecipeRegistry.getRecipe(new ItemStack(Items.leather))),
+                new PagePylon("5", PylonRecipeRegistry.getRecipe(new ItemStack(Items.blaze_powder, 20))),
+                new PagePylon("6", PylonRecipeRegistry.getRecipe(new ItemStack(Items.saddle, 1))),
+                new PagePylon("7", PylonRecipeRegistry.getRecipe(new ItemStack(Items.ender_eye, 2))),
+                new PagePylon("8", PylonRecipeRegistry.getRecipe(new ItemStack(Items.arrow, 8))),
+                new PagePylon("9", PylonRecipeRegistry.getRecipe(new ItemStack(Blocks.rail, 32))),
+                new PagePylon("10", PylonRecipeRegistry.getRecipe(new ItemStack(Blocks.lapis_block, 1))),
+                new PagePylon("11", PylonRecipeRegistry.getRecipe(new ItemStack(Items.repeater))),
+                new PagePylon("12", PylonRecipeRegistry.getRecipe(new ItemStack(Items.comparator))),
+                new PagePylon("13", PylonRecipeRegistry.getRecipe(new ItemStack(Blocks.soul_sand))),
+                new PagePylon("14", PylonRecipeRegistry.getRecipe(new ItemStack(Blocks.gold_block))),
+                new PagePylon("15", PylonRecipeRegistry.getRecipe(new ItemStack(Blocks.diamond_block))));
 
 
         // BASICS ENTRIES
@@ -121,7 +125,17 @@ public final class LexiconData {
         new BLexiconEntry("comparator", categoryBasics).setLexiconPages(new PageText("0"));
         new BLexiconEntry("monitor", categoryBasics).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", ((CraftingBenchRecipe) BlockRegistry.getFirstRecipeFromBlock(BlockMonitor.class)).iRecipe));
 
+        //Aura Colors
+        new BLexiconEntry("red", categoryAuraColors).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", ((ThaumicTinkererRecipeMulti) BlockRegistry.getRecipe(itemAuraCrystal)).getIRecipies(3, 4)));
+        new BLexiconEntry("orange", categoryAuraColors).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", ((ThaumicTinkererRecipeMulti) BlockRegistry.getRecipe(itemAuraCrystal)).getIRecipies(4, 5)));
+        new BLexiconEntry("yellow", categoryAuraColors).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", ((ThaumicTinkererRecipeMulti) BlockRegistry.getRecipe(itemAuraCrystal)).getIRecipies(5, 6)));
+        new BLexiconEntry("blue", categoryAuraColors).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", ((ThaumicTinkererRecipeMulti) BlockRegistry.getRecipe(itemAuraCrystal)).getIRecipies(6, 7)));
+        new BLexiconEntry("green", categoryAuraColors).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", ((ThaumicTinkererRecipeMulti) BlockRegistry.getRecipe(itemAuraCrystal)).getIRecipies(1, 2)));
+        new BLexiconEntry("violet", categoryAuraColors).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", ((ThaumicTinkererRecipeMulti) BlockRegistry.getRecipe(itemAuraCrystal)).getIRecipies(7, 8)));
+        new BLexiconEntry("black", categoryAuraColors).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", ((ThaumicTinkererRecipeMulti) BlockRegistry.getRecipe(itemAuraCrystal)).getIRecipies(2, 3)));
+
         //Aura Nodes
+        new BLexiconEntry("manipulator", categoryAuraNodes).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", ((CraftingBenchRecipe) BlockRegistry.getRecipe(AuraBlock.getBlockFromName("black"))).iRecipe), new PageCraftingRecipe("2", ((CraftingBenchRecipe) BlockRegistry.getRecipe(AuraBlock.getBlockFromName("orange"))).iRecipe));
         new BLexiconEntry("conserve", categoryAuraNodes).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", ((CraftingBenchRecipe) BlockRegistry.getRecipe(AuraBlock.getBlockFromName("conserve"))).iRecipe));
         new BLexiconEntry("capacitor", categoryAuraNodes).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", ((CraftingBenchRecipe) BlockRegistry.getRecipe(AuraBlock.getBlockFromName("capacitor"))).iRecipe));
         new BLexiconEntry("pumpProjectile", categoryAuraNodes).setLexiconPages(new PageText("0"), new PageCraftingRecipe("1", ((CraftingBenchRecipe) BlockRegistry.getRecipe(AuraBlock.getBlockFromName("pumpProjectile"))).iRecipe));
@@ -156,7 +170,23 @@ public final class LexiconData {
                 new PageCraftingRecipe("5", ItemGreenAmulet.class),
                 new PageCraftingRecipe("6", ItemBlueAmulet.class),
                 new PageCraftingRecipe("7", ItemPurpleAmulet.class));
-
+        new BLexiconEntry("books", categoryConsumers).setPriority().setLexiconPages(new PageText("0"), new PageText("1"), new PageText("2"), new PageCraftingRecipe("3", BlockRegistry.getFirstRecipeFromBlock(BlockBookshelfCoordinator.class)),
+                new PageCraftingRecipe("4", (BlockRegistry.getFirstRecipeFromItem(BasicStorageBook.class))),
+                new PageText("5"),
+                new PageCraftingRecipe("6", ((CraftingBenchRecipe) BlockRegistry.getFirstRecipeFromItem(DenseStorageBook.class)).iRecipe),
+                new PageCraftingRecipe("7", ((CraftingBenchRecipe) BlockRegistry.getFirstRecipeFromItem(VeryDenseStorageBook.class)).iRecipe),
+                new PageCraftingRecipe("8", ((CraftingBenchRecipe) BlockRegistry.getFirstRecipeFromItem(SuperDenseStorageBook.class)).iRecipe),
+                new PageCraftingRecipe("9", ((CraftingBenchRecipe) BlockRegistry.getFirstRecipeFromItem(ExtremelyDenseStorageBook.class)).iRecipe),
+                new PageText("10"),
+                new PageCraftingRecipe("11", ((CraftingBenchRecipe) BlockRegistry.getFirstRecipeFromItem(LightStorageBook.class)).iRecipe),
+                new PageCraftingRecipe("12", ((CraftingBenchRecipe) BlockRegistry.getFirstRecipeFromItem(VeryLightStorageBook.class)).iRecipe),
+                new PageCraftingRecipe("13", ((CraftingBenchRecipe) BlockRegistry.getFirstRecipeFromItem(SuperLightStorageBook.class)).iRecipe),
+                new PageCraftingRecipe("14", ((CraftingBenchRecipe) BlockRegistry.getFirstRecipeFromItem(ExtremelyLightStorageBook.class)).iRecipe),
+                new PageText("15"), new PageText("16"),
+                new PageCraftingRecipe("17", ((CraftingBenchRecipe) BlockRegistry.getFirstRecipeFromItem(MineralStorageBook.class)).iRecipe),
+                new PageCraftingRecipe("18", ((CraftingBenchRecipe) BlockRegistry.getFirstRecipeFromItem(MobStorageBook.class)).iRecipe),
+                new PageCraftingRecipe("19", ((CraftingBenchRecipe) BlockRegistry.getFirstRecipeFromItem(FarmingStorageBook.class)).iRecipe),
+                new PageCraftingRecipe("20", ((CraftingBenchRecipe) BlockRegistry.getFirstRecipeFromItem(ModStorageBook.class)).iRecipe));
 
         if (ModAPIManager.INSTANCE.hasAPI("CoFHAPI|energy")) {
             new BLexiconEntry("flux", categoryConsumers).setPriority().setLexiconPages(new PageText("0"), new PageText("1"), new PageCraftingRecipe("2", ((CraftingBenchRecipe) BlockRegistry.getRecipe(AuraBlock.getBlockFromName("flux"))).iRecipe));
@@ -233,7 +263,7 @@ public final class LexiconData {
         ItemStack pedestal = new ItemStack(AuraBlock.getBlockFromName("craftingPedestal"));
         ItemStack vortex = new ItemStack(AuraBlock.getBlockFromName("craftingCenter"));
         ItemStack monitor = new ItemStack(BlockRegistry.getFirstBlockFromClass(BlockMonitor.class));
-        ItemStack cobble = new ItemStack(Blocks.COBBLESTONE);
+        ItemStack cobble = new ItemStack(Blocks.cobblestone);
         new BLexiconEntry("patreon", categoryWalkthrough).setPriority().setLexiconPages(new PageGuide("0", "auramisc.support", "https://www.patreon.com/pixlepix"));
         new BLexiconEntry("basicSetup", categoryWalkthrough).setLexiconPages(new PageText("0"), new MultiblockPage("1", new ItemStack[][][]{
                 {{pumpnode, node, furnacenode}},

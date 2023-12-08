@@ -13,7 +13,6 @@ package pixlepix.auracascade.lexicon.page;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import pixlepix.auracascade.lexicon.IGuiLexiconEntry;
@@ -31,11 +30,11 @@ public class PageLoreText extends PageText {
     public void renderScreen(IGuiLexiconEntry gui, int mx, int my) {
         Minecraft.getMinecraft().renderEngine.bindTexture(paperOverlay);
 
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.color(1F, 1F, 1F, 1F);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glColor4f(1F, 1F, 1F, 1F);
         ((GuiScreen) gui).drawTexturedModalRect(gui.getLeft(), gui.getTop(), 0, 0, gui.getWidth(), gui.getHeight());
-        GlStateManager.disableBlend();
+        GL11.glDisable(GL11.GL_BLEND);
         super.renderScreen(gui, mx, my);
     }
 

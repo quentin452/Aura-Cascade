@@ -11,23 +11,22 @@
  */
 package pixlepix.auracascade.lexicon.page;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import pixlepix.auracascade.lexicon.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class PageRecipe extends LexiconPage {
@@ -55,21 +54,22 @@ public class PageRecipe extends LexiconPage {
         renderRecipe(gui, mx, my);
 
         int width = gui.getWidth() - 30;
+        int height = gui.getHeight();
         int x = gui.getLeft() + 16;
         int y = gui.getTop() + getTextOffset(gui);
-        if (!I18n.translateToLocal(getUnlocalizedName()).equals(getUnlocalizedName())) {
+        if (!StatCollector.translateToLocal(getUnlocalizedName()).equals(getUnlocalizedName())) {
             PageText.renderText(x, y, width, getUnlocalizedName());
         }
 
         if (tooltipStack != null) {
             List<String> tooltipData = tooltipStack.getTooltip(Minecraft.getMinecraft().thePlayer, false);
-            List<String> parsedTooltip = new ArrayList<>();
+            List<String> parsedTooltip = new ArrayList();
             boolean first = true;
 
             for (String s : tooltipData) {
                 String s_ = s;
                 if (!first)
-                    s_ = TextFormatting.GRAY + s;
+                    s_ = EnumChatFormatting.GRAY + s;
                 parsedTooltip.add(s_);
                 first = false;
             }
@@ -79,17 +79,17 @@ public class PageRecipe extends LexiconPage {
             int tooltipY = 8 + tooltipData.size() * 11;
 
             if (tooltipEntry) {
-                VazkiiRenderHelper.renderTooltipOrange(mx, my + tooltipY, Collections.singletonList(TextFormatting.GRAY + I18n.translateToLocal("auramisc.clickToRecipe")));
+                VazkiiRenderHelper.renderTooltipOrange(mx, my + tooltipY, Arrays.asList(EnumChatFormatting.GRAY + StatCollector.translateToLocal("auramisc.clickToRecipe")));
                 tooltipY += 18;
             }
 
             if (tooltipContainerStack != null)
-                VazkiiRenderHelper.renderTooltipGreen(mx, my + tooltipY, Arrays.asList(TextFormatting.AQUA + I18n.translateToLocal("auramisc.craftingContainer"), tooltipContainerStack.getDisplayName()));
+                VazkiiRenderHelper.renderTooltipGreen(mx, my + tooltipY, Arrays.asList(EnumChatFormatting.AQUA + StatCollector.translateToLocal("auramisc.craftingContainer"), tooltipContainerStack.getDisplayName()));
         }
 
         tooltipStack = tooltipContainerStack = null;
         tooltipEntry = false;
-        GlStateManager.disableBlend();
+        GL11.glDisable(GL11.GL_BLEND);
         mouseDownLastTick = Mouse.isButtonDown(0);
     }
 
@@ -136,19 +136,19 @@ public class PageRecipe extends LexiconPage {
 
     @SideOnly(Side.CLIENT)
     public void renderItem(IGuiLexiconEntry gui, int xPos, int yPos, ItemStack stack, boolean accountForContainer) {
-        RenderItem render = Minecraft.getMinecraft().getRenderItem();
+        RenderItem render = new RenderItem();
         boolean mouseDown = Mouse.isButtonDown(0);
 
-        GlStateManager.pushMatrix();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glPushMatrix();
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         RenderHelper.enableGUIStandardItemLighting();
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.enableDepth();
-        render.renderItemAndEffectIntoGUI(stack, xPos, yPos);
-        render.renderItemOverlayIntoGUI(Minecraft.getMinecraft().fontRendererObj, stack, xPos, yPos, "");
+        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        render.renderItemAndEffectIntoGUI(Minecraft.getMinecraft().fontRenderer, Minecraft.getMinecraft().getTextureManager(), stack, xPos, yPos);
+        render.renderItemOverlayIntoGUI(Minecraft.getMinecraft().fontRenderer, Minecraft.getMinecraft().getTextureManager(), stack, xPos, yPos);
         RenderHelper.disableStandardItemLighting();
-        GlStateManager.popMatrix();
+        GL11.glPopMatrix();
 
         if (relativeMouseX >= xPos && relativeMouseY >= yPos && relativeMouseX <= xPos + 16 && relativeMouseY <= yPos + 16) {
             tooltipStack = stack;
@@ -171,7 +171,7 @@ public class PageRecipe extends LexiconPage {
             }
         }
 
-        GlStateManager.disableLighting();
+        GL11.glDisable(GL11.GL_LIGHTING);
     }
 
 }

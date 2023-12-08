@@ -15,14 +15,12 @@ public class ItemStackCompatator implements Comparator<ItemStack> {
     @Override
     public int compare(ItemStack o1, ItemStack o2) {
 
-
-
         Object itemObj1 = o1.getItem();
         Object itemObj2 = o2.getItem();
 
         //Convert to block if it is a block
-        itemObj1 = Block.getBlockFromItem((Item) itemObj1) != null ? Block.getBlockFromItem((Item) itemObj1) : itemObj1;
-        itemObj2 = Block.getBlockFromItem((Item) itemObj2) != null ? Block.getBlockFromItem((Item) itemObj2) : itemObj2;
+        itemObj1 = Block.getBlockFromItem((Item) itemObj1) != Blocks.air ? Block.getBlockFromItem((Item) itemObj1) : itemObj1;
+        itemObj2 = Block.getBlockFromItem((Item) itemObj2) != Blocks.air ? Block.getBlockFromItem((Item) itemObj2) : itemObj2;
 
         if (itemObj1 instanceof ITTinkererRegisterable && itemObj2 instanceof ITTinkererRegisterable) {
             int p1 = ((ITTinkererRegisterable) itemObj1).getCreativeTabPriority();
@@ -31,8 +29,6 @@ public class ItemStackCompatator implements Comparator<ItemStack> {
             if (comp != 0) {
                 return comp;
             }
-        }else{
-            System.out.println("A non-comparable item snuck into the creative tab");
         }
 
         if (o1.getItem() instanceof ISpecialCreativeSort) {
@@ -47,7 +43,6 @@ public class ItemStackCompatator implements Comparator<ItemStack> {
         if (Block.getBlockFromItem(o2.getItem()) instanceof ISpecialCreativeSort) {
             return -1 * ((ISpecialCreativeSort) Block.getBlockFromItem(o2.getItem())).compare(o2, o1);
         }
-
         return o1.getDisplayName().compareToIgnoreCase(o2.getDisplayName());
     }
 

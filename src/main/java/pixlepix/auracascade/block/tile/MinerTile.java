@@ -3,9 +3,10 @@ package pixlepix.auracascade.block.tile;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumParticleTypes;
+import pixlepix.auracascade.AuraCascade;
 import pixlepix.auracascade.block.entity.EntityMinerExplosion;
 import pixlepix.auracascade.data.OreDropManager;
+import pixlepix.auracascade.main.AuraUtil;
 
 /**
  * Created by localmacaccount on 6/4/15.
@@ -49,24 +50,22 @@ public class MinerTile extends ConsumerTile {
     }
 
     @Override
-    public void update() {
-        if (worldObj.isBlockIndirectlyGettingPowered(getPos()) > 0) {
+    public void updateEntity() {
+        if (worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord)) {
             hasBeenPulsed = true;
         }
-        super.update();
+        super.updateEntity();
     }
 
     @Override
     public void onUsePower() {
-       // AuraCascade.analytics.eventDesign("consumerMiner", AuraUtil.formatLocation(this));
-
         if (!hasBeenPulsed) {
             if (explosion != null && !explosion.isDead) {
                 explosion.charge++;
                 explosion.lastCharged = worldObj.getTotalWorldTime();
             } else {
                 explosion = new EntityMinerExplosion(worldObj);
-                explosion.setPosition(pos.getX() + .5, pos.getY() - 1.5, pos.getZ() + .5);
+                explosion.setPosition(xCoord + .5, yCoord - 1.5, zCoord + .5);
                 explosion.charge = 1;
                 explosion.lastCharged = worldObj.getTotalWorldTime();
                 explosion.bounce();
@@ -79,15 +78,14 @@ public class MinerTile extends ConsumerTile {
                 explosion.setDead();
 
                 if (worldObj.isRemote) {
-                    this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, explosion.posX, explosion.posY, explosion.posZ, 0.0D, 0.0D, 0.0D);
+                    this.worldObj.spawnParticle("hugeexplosion", explosion.posX, explosion.posY, explosion.posZ, 0.0D, 0.0D, 0.0D);
                 } else if (explosion.charge > 20) {
                     int oresSpawned = (int) ((Math.pow(explosion.charge, 1.5)) / 50);
                     for (int i = 0; i < oresSpawned; i++) {
                         ItemStack stack = OreDropManager.getOreToPut();
-                        EntityItem item = new EntityItem(worldObj, pos.getX() + .5, pos.getY() + 1.5, pos.getZ() + .5, stack);
+                        EntityItem item = new EntityItem(worldObj, xCoord + .5, yCoord + 1.5, zCoord + .5, stack);
                         worldObj.spawnEntityInWorld(item);
                     }
-                //    AuraCascade.analytics.eventDesign("consumerMinerLoot", AuraUtil.formatLocation(this), explosion.charge);
                 }
             }
             hasBeenPulsed = false;

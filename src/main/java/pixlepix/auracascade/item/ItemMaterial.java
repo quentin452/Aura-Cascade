@@ -1,10 +1,12 @@
 package pixlepix.auracascade.item;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import pixlepix.auracascade.data.EnumRainbowColor;
+import pixlepix.auracascade.data.AuraQuantity;
+import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.data.recipe.ProcessorRecipe;
 import pixlepix.auracascade.data.recipe.PylonRecipe;
 import pixlepix.auracascade.data.recipe.PylonRecipeComponent;
@@ -22,7 +24,7 @@ import java.util.List;
 public class ItemMaterial extends Item implements ITTinkererItem {
 
     public static String[] names = new String[]{"ingot", "gem", "prism"};
-    public EnumRainbowColor color;
+    public EnumAura aura;
     //0 = Ingot
     //1 = Gem
     //2 = Prism (Only 1 color)
@@ -30,26 +32,26 @@ public class ItemMaterial extends Item implements ITTinkererItem {
     //Left like this as multicolored prisms are planned in the future
     public int materialIndex;
 
-    public ItemMaterial(EnumRainbowColor color, int materialIndex) {
+    public ItemMaterial(EnumAura aura, int materialIndex) {
         super();
 
-        this.color = color;
+        this.aura = aura;
         this.materialIndex = materialIndex;
     }
 
     public ItemMaterial(MaterialPair materialPair) {
-        this(materialPair.color, materialPair.materialIndex);
+        this(materialPair.aura, materialPair.materialIndex);
     }
 
     public ItemMaterial() {
-        this(EnumRainbowColor.WHITE, 2);
+        this(EnumAura.WHITE_AURA, 2);
     }
 
     public static ItemMaterial getItemFromSpecs(MaterialPair pair) {
         List<Item> blockList = BlockRegistry.getItemFromClass(ItemMaterial.class);
         for (Item b : blockList) {
             ItemMaterial itemMaterial = (ItemMaterial) b;
-            if (pair.color == itemMaterial.color && pair.materialIndex == itemMaterial.materialIndex) {
+            if (pair.aura == itemMaterial.aura && pair.materialIndex == itemMaterial.materialIndex) {
                 return itemMaterial;
             }
         }
@@ -63,22 +65,22 @@ public class ItemMaterial extends Item implements ITTinkererItem {
     }
 
     public static ItemStack getPrism(int size) {
-        return new ItemStack(getItemFromSpecs(new MaterialPair(EnumRainbowColor.WHITE, 2)), size);
+        return new ItemStack(getItemFromSpecs(new MaterialPair(EnumAura.WHITE_AURA, 2)), size);
     }
 
-    public static ItemStack getGem(EnumRainbowColor color, int size) {
+    public static ItemStack getGem(EnumAura color, int size) {
         return new ItemStack(getItemFromSpecs(new MaterialPair(color, 1)), 1);
     }
 
-    public static ItemStack getGem(EnumRainbowColor color) {
+    public static ItemStack getGem(EnumAura color) {
         return getGem(color, 1);
     }
 
-    public static ItemStack getIngot(EnumRainbowColor color) {
+    public static ItemStack getIngot(EnumAura color) {
         return getIngot(color, 1);
     }
 
-    public static ItemStack getIngot(EnumRainbowColor color, int size) {
+    public static ItemStack getIngot(EnumAura color, int size) {
         return new ItemStack(getItemFromSpecs(new MaterialPair(color, 0)), size);
     }
 
@@ -86,7 +88,7 @@ public class ItemMaterial extends Item implements ITTinkererItem {
     public ArrayList<Object> getSpecialParameters() {
         ArrayList<Object> result = new ArrayList<Object>();
         for (int i = 0; i < 2; i++) {
-            for (EnumRainbowColor auraCons : EnumRainbowColor.values()) {
+            for (EnumAura auraCons : EnumAura.values()) {
                 result.add(new MaterialPair(auraCons, i));
             }
         }
@@ -95,7 +97,7 @@ public class ItemMaterial extends Item implements ITTinkererItem {
 
     @Override
     public String getItemName() {
-        return names[materialIndex] + color.name;
+        return names[materialIndex] + aura.name;
     }
 
     @Override
@@ -109,32 +111,37 @@ public class ItemMaterial extends Item implements ITTinkererItem {
     }
 
     @Override
+    public void registerIcons(IIconRegister register) {
+        itemIcon = register.registerIcon("aura:" + names[materialIndex] + aura.name);
+    }
+
+    @Override
     public ThaumicTinkererRecipe getRecipeItem() {
         if (materialIndex == 0) {
             ThaumicTinkererRecipeMulti multi = new ThaumicTinkererRecipeMulti();
-            for (int i : color.dyes) {
-                multi.addRecipe(new ProcessorRecipe(new ItemStack(this), false, new ItemStack(Items.IRON_INGOT), new ItemStack(Blocks.WOOL, 1, i)));
+            for (int i : aura.dyes) {
+                multi.addRecipe(new ProcessorRecipe(new ItemStack(this), false, new ItemStack(Items.iron_ingot), new ItemStack(Blocks.wool, 1, i)));
             }
             return multi;
         }
         if (materialIndex == 1) {
             return new PylonRecipe(
                     new ItemStack(this),
-                    new PylonRecipeComponent(60000, new ItemStack(Items.DIAMOND)),
-                    new PylonRecipeComponent(20000, new ItemStack(getItemFromSpecs(new MaterialPair(color, 0)))),
-                    new PylonRecipeComponent(20000, new ItemStack(getItemFromSpecs(new MaterialPair(color, 0)))),
-                    new PylonRecipeComponent(20000, new ItemStack(getItemFromSpecs(new MaterialPair(color, 0)))));
+                    new PylonRecipeComponent(new AuraQuantity(EnumAura.WHITE_AURA, 60000), new ItemStack(Items.diamond)),
+                    new PylonRecipeComponent(new AuraQuantity(EnumAura.WHITE_AURA, 20000), new ItemStack(getItemFromSpecs(new MaterialPair(aura, 0)))),
+                    new PylonRecipeComponent(new AuraQuantity(EnumAura.WHITE_AURA, 20000), new ItemStack(getItemFromSpecs(new MaterialPair(aura, 0)))),
+                    new PylonRecipeComponent(new AuraQuantity(EnumAura.WHITE_AURA, 20000), new ItemStack(getItemFromSpecs(new MaterialPair(aura, 0)))));
         }
         if (materialIndex == 2) {
             return new ProcessorRecipe(new ItemStack(this), false,
-                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumRainbowColor.RED, 1))),
-                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumRainbowColor.ORANGE, 1))),
-                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumRainbowColor.YELLOW, 1))),
-                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumRainbowColor.BLUE, 1))),
-                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumRainbowColor.GREEN, 1))),
-                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumRainbowColor.VIOLET, 1))),
-                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumRainbowColor.BLACK, 1))),
-                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumRainbowColor.WHITE, 1))));
+                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumAura.RED_AURA, 1))),
+                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumAura.ORANGE_AURA, 1))),
+                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumAura.YELLOW_AURA, 1))),
+                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumAura.BLUE_AURA, 1))),
+                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumAura.GREEN_AURA, 1))),
+                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumAura.VIOLET_AURA, 1))),
+                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumAura.BLACK_AURA, 1))),
+                    new ItemStack(getItemFromSpecs(new MaterialPair(EnumAura.WHITE_AURA, 1))));
         }
         return null;
     }
@@ -146,11 +153,11 @@ public class ItemMaterial extends Item implements ITTinkererItem {
 
     //Private class for constructor
     public static class MaterialPair {
-        private final EnumRainbowColor color;
+        private final EnumAura aura;
         private final int materialIndex;
 
-        public MaterialPair(EnumRainbowColor color, int materialIndex) {
-            this.color = color;
+        public MaterialPair(EnumAura aura, int materialIndex) {
+            this.aura = aura;
             this.materialIndex = materialIndex;
         }
     }

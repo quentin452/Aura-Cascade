@@ -1,10 +1,11 @@
 package pixlepix.auracascade.item;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import pixlepix.auracascade.data.EnumRainbowColor;
+import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.registry.CraftingBenchRecipe;
 import pixlepix.auracascade.registry.ITTinkererItem;
 import pixlepix.auracascade.registry.ThaumicTinkererRecipe;
@@ -52,7 +53,12 @@ public class ItemRedHole extends Item implements ITTinkererItem {
 
     @Override
     public ThaumicTinkererRecipe getRecipeItem() {
-        return new CraftingBenchRecipe(new ItemStack(this), "IGI", " I ", "IGI", 'G', ItemMaterial.getGem(EnumRainbowColor.RED), 'I', ItemMaterial.getIngot(EnumRainbowColor.RED));
+        return new CraftingBenchRecipe(new ItemStack(this), "IGI", " I ", "IGI", 'G', ItemMaterial.getGem(EnumAura.RED_AURA), 'I', ItemMaterial.getIngot(EnumAura.RED_AURA));
+    }
+
+    @Override
+    public void registerIcons(IIconRegister register) {
+        itemIcon = register.registerIcon("aura:redHole");
     }
 
     @Override

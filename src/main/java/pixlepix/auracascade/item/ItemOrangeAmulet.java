@@ -2,11 +2,12 @@ package pixlepix.auracascade.item;
 
 import baubles.api.BaubleType;
 import baubles.api.IBauble;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import pixlepix.auracascade.data.EnumRainbowColor;
+import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.registry.CraftingBenchRecipe;
 import pixlepix.auracascade.registry.ITTinkererItem;
 import pixlepix.auracascade.registry.ThaumicTinkererRecipe;
@@ -53,6 +54,11 @@ public class ItemOrangeAmulet extends Item implements IBauble, ITTinkererItem {
     }
 
     @Override
+    public void registerIcons(IIconRegister register) {
+        itemIcon = register.registerIcon("aura:amuletOrange");
+    }
+
+    @Override
     public String getItemName() {
         return "orangeAmulet";
     }
@@ -74,7 +80,7 @@ public class ItemOrangeAmulet extends Item implements IBauble, ITTinkererItem {
 
     @Override
     public ThaumicTinkererRecipe getRecipeItem() {
-        return new CraftingBenchRecipe(new ItemStack(this), "SSS", "S S", "SSG", 'G', ItemMaterial.getGem(EnumRainbowColor.ORANGE), 'S', new ItemStack(Items.STRING));
+        return new CraftingBenchRecipe(new ItemStack(this), "SSS", "S S", "SSG", 'G', ItemMaterial.getGem(EnumAura.ORANGE_AURA), 'S', new ItemStack(Items.string));
     }
 
     @Override

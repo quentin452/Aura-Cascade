@@ -2,21 +2,15 @@ package pixlepix.auracascade.enchant;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnumEnchantmentType;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
-import pixlepix.auracascade.data.EnumRainbowColor;
+import pixlepix.auracascade.data.EnumAura;
 
 /**
  * Created by localmacaccount on 2/14/15.
  */
 public class KaleidoscopeEnchantment extends Enchantment {
-	private static EntityEquipmentSlot[] slots = new EntityEquipmentSlot[]{
-			EntityEquipmentSlot.CHEST
-	};
-    public KaleidoscopeEnchantment(EnumRainbowColor aura) {
-        //super(id, new ResourceLocation(ConstantMod.prefixMod, "kaleidoscope"), 0, EnumEnchantmentType.ALL);
-    	
-    	super(Enchantment.Rarity.RARE, EnumEnchantmentType.ALL, slots);
+    public KaleidoscopeEnchantment(int id, EnumAura aura) {
+        super(id, 0, EnumEnchantmentType.all);
         setName(aura.name);
     }
 
@@ -30,7 +24,7 @@ public class KaleidoscopeEnchantment extends Enchantment {
 
     @Override
     public boolean canApply(ItemStack stack) {
-        return EnumEnchantmentType.DIGGER.canEnchantItem(stack.getItem()) || EnumEnchantmentType.WEAPON.canEnchantItem(stack.getItem());
+        return EnumEnchantmentType.digger.canEnchantItem(stack.getItem()) || EnumEnchantmentType.weapon.canEnchantItem(stack.getItem());
     }
 
     @Override

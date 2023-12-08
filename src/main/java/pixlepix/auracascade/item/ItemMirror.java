@@ -1,8 +1,7 @@
 package pixlepix.auracascade.item;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityGhast;
@@ -12,21 +11,16 @@ import net.minecraft.entity.projectile.EntityWitherSkull;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import pixlepix.auracascade.AuraCascade;
-import pixlepix.auracascade.data.EnumRainbowColor;
+import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.network.PacketBurst;
 import pixlepix.auracascade.registry.CraftingBenchRecipe;
 import pixlepix.auracascade.registry.ITTinkererItem;
 import pixlepix.auracascade.registry.ThaumicTinkererRecipe;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by localmacaccount on 5/30/15.
@@ -47,6 +41,11 @@ public class ItemMirror extends Item implements ITTinkererItem {
     }
 
     @Override
+    public void registerIcons(IIconRegister register) {
+        itemIcon = register.registerIcon("aura:mirror");
+    }
+
+    @Override
     public boolean shouldRegister() {
         return true;
     }
@@ -64,32 +63,25 @@ public class ItemMirror extends Item implements ITTinkererItem {
      * @param player
      */
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand){
-        AxisAlignedBB axisAlignedBB = new AxisAlignedBB(player.posX - 6, player.posY - 6, player.posZ - 6, player.posX + 6, player.posY + 6, player.posZ + 6);
+    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
+        AxisAlignedBB axisAlignedBB = AxisAlignedBB.getBoundingBox(player.posX - 6, player.posY - 6, player.posZ - 6, player.posX + 6, player.posY + 6, player.posZ + 6);
         ArrayList<EntityFireball> fireballs = (ArrayList<EntityFireball>) world.getEntitiesWithinAABB(EntityFireball.class, axisAlignedBB);
         for (EntityFireball fireball : fireballs) {
             if (fireball.getDistanceSqToEntity(player) <= 25) {
                 redirect(fireball);
             }
         }
-        AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(7, player.posX, player.posY, player.posZ), new NetworkRegistry.TargetPoint(player.worldObj.provider.getDimension(), player.posX, player.posY, player.posZ, 32));
+        AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(7, player.posX, player.posY, player.posZ), new NetworkRegistry.TargetPoint(player.worldObj.provider.dimensionId, player.posX, player.posY, player.posZ, 32));
 
-        return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
+        return stack;
     }
 
     public void redirect(EntityFireball entity) {
 
         if (!entity.worldObj.isRemote && !(entity instanceof EntityWitherSkull)) {
-            AxisAlignedBB axisAlignedBB = new AxisAlignedBB(entity.posX - 100, entity.posY - 100, entity.posZ - 100, entity.posX + 100, entity.posY + 100, entity.posZ + 100);
-
-
-            List<EntityFireball> targets = ImmutableList.copyOf(Iterables.filter(entity.worldObj.getEntitiesWithinAABB(EntityFireball.class, axisAlignedBB), new Predicate<EntityFireball>() {
-                @Override
-                public boolean apply(EntityFireball input) {
-                    return input.shootingEntity instanceof EntityBlaze || input.shootingEntity instanceof EntityGhast;
-                }
-            }));
-
+            AxisAlignedBB axisAlignedBB = AxisAlignedBB.getBoundingBox(entity.posX - 100, entity.posY - 100, entity.posZ - 100, entity.posX + 100, entity.posY + 100, entity.posZ + 100);
+            ArrayList<EntityFireball> targets = (ArrayList<EntityFireball>) entity.worldObj.getEntitiesWithinAABB(EntityBlaze.class, axisAlignedBB);
+            targets.addAll((ArrayList<EntityFireball>) entity.worldObj.getEntitiesWithinAABB(EntityGhast.class, axisAlignedBB));
             if (targets.size() > 0) {
 
                 //Check to make sure the fireball is traveling towards the player
@@ -100,7 +92,7 @@ public class ItemMirror extends Item implements ITTinkererItem {
                 entity.accelerationX = entity.motionX * .3;
                 entity.accelerationY = entity.motionY * .3;
                 entity.accelerationZ = entity.motionZ * .3;
-                AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, entity.posX, entity.posY, entity.posZ), new NetworkRegistry.TargetPoint(entity.worldObj.provider.getDimension(), entity.posX, entity.posY, entity.posZ, 32));
+                AuraCascade.proxy.networkWrapper.sendToAllAround(new PacketBurst(1, entity.posX, entity.posY, entity.posZ), new NetworkRegistry.TargetPoint(entity.worldObj.provider.dimensionId, entity.posX, entity.posY, entity.posZ, 32));
             }
         }
     }
@@ -119,7 +111,7 @@ public class ItemMirror extends Item implements ITTinkererItem {
 
     @Override
     public ThaumicTinkererRecipe getRecipeItem() {
-        return new CraftingBenchRecipe(new ItemStack(this), " G ", "GIG", " G ", 'G', new ItemStack(Blocks.GLASS), 'I', ItemMaterial.getIngot(EnumRainbowColor.RED));
+        return new CraftingBenchRecipe(new ItemStack(this), " G ", "GIG", " G ", 'G', new ItemStack(Blocks.glass), 'I', ItemMaterial.getIngot(EnumAura.RED_AURA));
     }
 
     @Override

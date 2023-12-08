@@ -4,7 +4,9 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeGenBase;
+import pixlepix.auracascade.AuraCascade;
+import pixlepix.auracascade.main.AuraUtil;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -32,14 +34,19 @@ public class SpawnTile extends ConsumerTile {
 
     @Override
     public void onUsePower() {
-        //AuraCascade.analytics.eventDesign("consumerSpawner", AuraUtil.formatLocation(this));
-        Biome.SpawnListEntry spawnListEntry = ((WorldServer) worldObj).getSpawnListEntryForTypeAt(EnumCreatureType.MONSTER, getPos());
+        BiomeGenBase.SpawnListEntry spawnListEntry = ((WorldServer) worldObj).spawnRandomCreature(EnumCreatureType.monster, xCoord, yCoord, zCoord);
         try {
             EntityLiving entity = (EntityLiving) spawnListEntry.entityClass.getConstructor(new Class[]{World.class}).newInstance(worldObj);
-            entity.setPosition(pos.getX() + .5, pos.getY() + 2, pos.getZ() + .5);
+            entity.setPosition(xCoord + .5, yCoord + 2, zCoord + .5);
             worldObj.spawnEntityInWorld(entity);
-            //TODO 1.8.8 entity.onSpawnWithEgg(null);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException  | InvocationTargetException e) {
+            entity.onSpawnWithEgg(null);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
 

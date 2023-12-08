@@ -1,13 +1,13 @@
 package pixlepix.auracascade.potions;
 
-import net.minecraft.client.renderer.texture.TextureMap;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import pixlepix.auracascade.data.EnumRainbowColor;
+import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.item.ItemAngelsteelSword;
 
 import java.util.Random;
@@ -16,8 +16,8 @@ import java.util.Random;
  * Created by localmacaccount on 1/19/15.
  */
 public class PotionBlueCurse extends Potion {
-    public PotionBlueCurse() {
-        super(true, EnumRainbowColor.BLUE.color.getHex());
+    public PotionBlueCurse(int id) {
+        super(id, true, EnumAura.BLUE_AURA.color.getHex());
         setPotionName("Blue Curse");
 
     }
@@ -25,9 +25,8 @@ public class PotionBlueCurse extends Potion {
     @Override
     @SideOnly(Side.CLIENT)
     public void renderInventoryEffect(int x, int y, PotionEffect effect, net.minecraft.client.Minecraft mc) {
-        mc.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-        mc.getRenderItem().renderItemIntoGUI(ItemAngelsteelSword.getStackFirstDegree(EnumRainbowColor.BLUE), x + 8, y + 8);
-        //mc.currentScreen.drawTexturedModelRectFromIcon(x + 8, y + 8, ItemAngelsteelSword.getStackFirstDegree(EnumRainbowColor.BLUE).getIconIndex(), 16, 16);
+        Minecraft.getMinecraft().renderEngine.bindTexture(Minecraft.getMinecraft().renderEngine.getResourceLocation(1));
+        mc.currentScreen.drawTexturedModelRectFromIcon(x + 8, y + 8, ItemAngelsteelSword.getStackFirstDegree(EnumAura.BLUE_AURA).getIconIndex(), 16, 16);
     }
 
     @Override

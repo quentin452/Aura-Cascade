@@ -3,7 +3,6 @@ package pixlepix.auracascade.data;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 
@@ -24,11 +23,11 @@ public class StorageItemStack {
     }
 
     public StorageItemStack(ItemStack stack) {
-        this(stack.getItem(), stack.stackSize, stack.getItemDamage(), stack.getTagCompound());
+        this(stack.getItem(), stack.stackSize, stack.getItemDamage(), stack.stackTagCompound);
     }
 
     public static StorageItemStack readFromNBT(NBTTagCompound compound) {
-        Item item = Item.REGISTRY.getObject(new ResourceLocation(compound.getString("item")));
+        Item item = (Item) Item.itemRegistry.getObject(compound.getString("item"));
         int stackSize = compound.getInteger("stackSize");
         int damage = compound.getInteger("damage");
         compound = compound.getCompoundTag("compound");
@@ -37,7 +36,7 @@ public class StorageItemStack {
 
     public NBTTagCompound writeToNBT() {
         NBTTagCompound result = new NBTTagCompound();
-        result.setString("item", Item.REGISTRY.getNameForObject(item).toString());
+        result.setString("item", Item.itemRegistry.getNameForObject(item));
         result.setInteger("stackSize", stackSize);
         result.setInteger("damage", damage);
         result.setTag("compound", compound);
@@ -93,7 +92,7 @@ public class StorageItemStack {
             ItemStack resultStack = null;
             if (delta > 0) {
                 resultStack = new ItemStack(item, delta, damage);
-                resultStack.setTagCompound((NBTTagCompound) compound.copy());
+                resultStack.stackTagCompound = (NBTTagCompound) compound.copy();
             }
             result.add(resultStack);
         }
@@ -105,7 +104,7 @@ public class StorageItemStack {
             return null;
         }
         ItemStack result = new ItemStack(item, stackSize, damage);
-        result.setTagCompound(compound);
+        result.stackTagCompound = compound;
         return result;
     }
 }

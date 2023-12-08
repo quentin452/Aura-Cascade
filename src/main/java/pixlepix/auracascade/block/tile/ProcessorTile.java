@@ -2,9 +2,10 @@ package pixlepix.auracascade.block.tile;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.StringUtils;
+import pixlepix.auracascade.AuraCascade;
 import pixlepix.auracascade.data.recipe.ProcessorRecipe;
 import pixlepix.auracascade.data.recipe.ProcessorRecipeRegistry;
 import pixlepix.auracascade.main.AuraUtil;
@@ -47,7 +48,7 @@ public class ProcessorTile extends ConsumerTile {
     @Override
     public boolean validItemsNearby() {
         int range = 3;
-        List<EntityItem> nearbyItems = worldObj.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)));
+        List<EntityItem> nearbyItems = worldObj.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(xCoord - range, yCoord - range, zCoord - range, xCoord + range, yCoord + range, zCoord + range));
         for (EntityItem entityItem : nearbyItems) {
             ItemStack stack = entityItem.getEntityItem();
             if (getDoubleResult(stack) != null) {
@@ -68,10 +69,9 @@ public class ProcessorTile extends ConsumerTile {
 
     @Override
     public void onUsePower() {
-    //    AuraCascade.analytics.eventDesign(isPrismatic() ? "consumerProcessorPrism" : "consumerProcessor", AuraUtil.formatLocation(this));
         int range = 3;
-        ItemStack resultStack;
-        List<EntityItem> nearbyItems = worldObj.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)));
+        ItemStack resultStack = null;
+        List<EntityItem> nearbyItems = worldObj.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(xCoord - range, yCoord - range, zCoord - range, xCoord + range, yCoord + range, zCoord + range));
         for (EntityItem entityItem : nearbyItems) {
             ItemStack stack = entityItem.getEntityItem();
             if (getDoubleResult(stack) != null) {
@@ -90,9 +90,9 @@ public class ProcessorTile extends ConsumerTile {
 
                 ItemStack entityStack = entityItem.getEntityItem();
 
-                Iterator<ItemStack> recipeItemIter = ingredients.iterator();
+                Iterator recipeItemIter = ingredients.iterator();
                 while (recipeItemIter.hasNext()) {
-                    ItemStack curStack = recipeItemIter.next();
+                    ItemStack curStack = (ItemStack) recipeItemIter.next();
                     if (curStack.stackSize <= entityStack.stackSize && curStack.getItemDamage() == entityStack.getItemDamage() && curStack.getItem() == entityStack.getItem()) {
                         spawnNear = entityItem;
                         entityStack.stackSize -= curStack.stackSize;

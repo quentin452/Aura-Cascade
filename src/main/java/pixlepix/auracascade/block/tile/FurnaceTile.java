@@ -4,7 +4,8 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.AxisAlignedBB;
+import pixlepix.auracascade.AuraCascade;
 import pixlepix.auracascade.main.AuraUtil;
 
 import java.util.List;
@@ -35,10 +36,10 @@ public class FurnaceTile extends ConsumerTile {
     @Override
     public boolean validItemsNearby() {
         int range = 3;
-        List<EntityItem> nearbyItems = worldObj.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)));
+        List<EntityItem> nearbyItems = worldObj.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(xCoord - range, yCoord - range, zCoord - range, xCoord + range, yCoord + range, zCoord + range));
         for (EntityItem entityItem : nearbyItems) {
             ItemStack stack = entityItem.getEntityItem();
-            if (FurnaceRecipes.instance().getSmeltingResult(stack) != null) {
+            if (FurnaceRecipes.smelting().getSmeltingResult(stack) != null) {
                 return true;
             }
         }
@@ -54,12 +55,11 @@ public class FurnaceTile extends ConsumerTile {
 
     @Override
     public void onUsePower() {
-   //     AuraCascade.analytics.eventDesign("consumerSmelt", AuraUtil.formatLocation(this));
         int range = 3;
-        List<EntityItem> nearbyItems = worldObj.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(pos.add(-range, -range, -range), pos.add(range, range, range)));
+        List<EntityItem> nearbyItems = worldObj.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.getBoundingBox(xCoord - range, yCoord - range, zCoord - range, xCoord + range, yCoord + range, zCoord + range));
         for (EntityItem entityItem : nearbyItems) {
             ItemStack stack = entityItem.getEntityItem();
-            if (FurnaceRecipes.instance().getSmeltingResult(stack) != null) {
+            if (FurnaceRecipes.smelting().getSmeltingResult(stack) != null) {
 
                 //Kill the stack
                 if (stack.stackSize == 0) {
@@ -68,7 +68,7 @@ public class FurnaceTile extends ConsumerTile {
                     stack.stackSize--;
                 }
 
-                AuraUtil.respawnItemWithParticles(worldObj, entityItem, FurnaceRecipes.instance().getSmeltingResult(stack).copy());
+                AuraUtil.respawnItemWithParticles(worldObj, entityItem, FurnaceRecipes.smelting().getSmeltingResult(stack).copy());
 
                 break;
             }

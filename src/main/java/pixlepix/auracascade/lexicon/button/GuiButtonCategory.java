@@ -12,18 +12,18 @@
 package pixlepix.auracascade.lexicon.button;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 import pixlepix.auracascade.lexicon.GuiLexicon;
 import pixlepix.auracascade.lexicon.LexiconCategory;
 import pixlepix.auracascade.lexicon.LibResources;
 import pixlepix.auracascade.lexicon.VazkiiRenderHelper;
 
-import java.util.Collections;
+import java.util.Arrays;
 
 public class GuiButtonCategory extends GuiButtonLexicon {
 
@@ -63,26 +63,26 @@ public class GuiButtonCategory extends GuiButtonLexicon {
         float defAlpha = 0.3F;
         float alpha = ticksHovered / time * (1F - defAlpha) + defAlpha;
 
-        GlStateManager.pushMatrix();
-        GlStateManager.color(2F, 2F, 2F, alpha);
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glPushMatrix();
+        GL11.glColor4f(2F, 2F, 2F, alpha);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         //GL11.glScalef(.5F, 3F, 3F);
 
         ItemStack itemStack;
         if (category == null) {
-            itemStack = new ItemStack(Items.BOOK);
+            itemStack = new ItemStack(Items.book);
         } else {
             itemStack = category.getIcon();
         }
-        GlStateManager.disableLighting();
-        Minecraft.getMinecraft().getRenderItem().renderItemIntoGUI(itemStack, xPosition, yPosition);
+        GL11.glDisable(GL11.GL_LIGHTING);
+        RenderItem.getInstance().renderItemIntoGUI(Minecraft.getMinecraft().fontRenderer, Minecraft.getMinecraft().getTextureManager(), itemStack, xPosition, yPosition);
 
-        GlStateManager.enableLighting();
-        GlStateManager.popMatrix();
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glPopMatrix();
 
         if (inside)
-            VazkiiRenderHelper.renderTooltipGreen(mx, my, Collections.singletonList(I18n.translateToLocal(getTooltipText())));
+            VazkiiRenderHelper.renderTooltipGreen(mx, my, Arrays.asList(StatCollector.translateToLocal(getTooltipText())));
     }
 
     String getTooltipText() {
@@ -94,9 +94,5 @@ public class GuiButtonCategory extends GuiButtonLexicon {
     public LexiconCategory getCategory() {
         return category;
     }
-
-	public static ResourceLocation getFallbackresource() {
-		return fallbackResource;
-	}
 
 }

@@ -1,7 +1,6 @@
 package pixlepix.auracascade.data;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -9,6 +8,7 @@ import java.util.List;
 /**
  * Created by pixlepix on 12/29/14.
  */
+@SuppressWarnings("UnusedParameters")
 public interface IToolTip {
-    List<String> getTooltipData(World world, EntityPlayer player, BlockPos pos);
+    public List<String> getTooltipData(World world, EntityPlayer player, int x, int y, int z);
 }

@@ -3,22 +3,20 @@ package pixlepix.auracascade.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import pixlepix.auracascade.block.tile.*;
-import pixlepix.auracascade.data.EnumRainbowColor;
+import pixlepix.auracascade.data.AuraQuantity;
+import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.data.IToolTip;
 import pixlepix.auracascade.data.recipe.PylonRecipe;
 import pixlepix.auracascade.data.recipe.PylonRecipeComponent;
@@ -39,40 +37,21 @@ import java.util.List;
  */
 public class ConsumerBlock extends Block implements IToolTip, ITTinkererBlock, ITileEntityProvider {
 
-    public static final PropertyEnum<EnumFacing> FACING = PropertyEnum.create("facing", EnumFacing.class, EnumFacing.Plane.HORIZONTAL);
-
     public String name;
+    public IIcon front;
+    public IIcon side;
+    public IIcon top;
 
     public ConsumerBlock() {
-        super(Material.IRON);
+        super(Material.iron);
         this.name = "furnace";
         setHardness(2F);
-        setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.SOUTH));
     }
 
     public ConsumerBlock(String name) {
-        super(Material.IRON);
+        super(Material.iron);
         this.name = name;
         setHardness(2F);
-        setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.SOUTH));
-    }
-
-    @Override
-    public BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, FACING);
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return state.getValue(FACING).getIndex();
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        if (meta < 2 || meta > 5) {
-            meta = 2;
-        }
-        return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
     }
 
     public static ConsumerBlock getBlockFromName(String name) {
@@ -85,67 +64,160 @@ public class ConsumerBlock extends Block implements IToolTip, ITTinkererBlock, I
         return null;
     }
 
-    @Override
-    public void onBlockPlacedBy(World w, BlockPos pos, IBlockState state, EntityLivingBase livingBase, ItemStack stack) {
-        w.setBlockState(pos, state.withProperty(FACING, livingBase.getHorizontalFacing().getOpposite()));
-        AuraUtil.updateMonitor(w, pos);
+    public void onBlockPlacedBy(World w, int x, int y, int z, EntityLivingBase livingBase, ItemStack stack) {
+        int l = MathHelper.floor_double((double) (livingBase.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+
+        if (l == 0) {
+            w.setBlockMetadataWithNotify(x, y, z, 2, 2);
+        }
+
+        if (l == 1) {
+            w.setBlockMetadataWithNotify(x, y, z, 5, 2);
+        }
+
+        if (l == 2) {
+            w.setBlockMetadataWithNotify(x, y, z, 3, 2);
+        }
+
+        if (l == 3) {
+            w.setBlockMetadataWithNotify(x, y, z, 4, 2);
+        }
+
+        AuraUtil.updateMonitor(w, x, y, z);
     }
     @Override
-    public void breakBlock(World w, BlockPos pos, IBlockState state) {
-        super.breakBlock(w, pos, state);
-        AuraUtil.updateMonitor(w, pos);
+    public void breakBlock(World w, int x, int y, int z, Block b, int p_149749_6_) {
+        super.breakBlock(w, x, y, z, b, p_149749_6_);
+        AuraUtil.updateMonitor(w, x, y, z);
+    }
+
+    @Override
+    public void registerBlockIcons(IIconRegister iconRegister) {
+        if (name.equals("furnace")) {
+            top = iconRegister.registerIcon("aura:auraFurnace_top");
+            side = iconRegister.registerIcon("aura:auraFurnace_side");
+            front = iconRegister.registerIcon("aura:auraFurnace_front");
+        }
+
+        if (name.equals("ore")) {
+            blockIcon = iconRegister.registerIcon("aura:auraOre");
+        }
+        if (name.equals("mob")) {
+            blockIcon = iconRegister.registerIcon("aura:auraMob");
+        }
+
+        if (name.equals("plant")) {
+            blockIcon = iconRegister.registerIcon("aura:auraGrow");
+            top = iconRegister.registerIcon("aura:auraGrowTop");
+        }
+        if (name.equals("fish")) {
+            blockIcon = iconRegister.registerIcon("aura:auraFish");
+        }
+        if (name.equals("angel")) {
+            blockIcon = iconRegister.registerIcon("aura:auraAngel");
+            top = iconRegister.registerIcon("aura:auraAngelTop");
+        }
+        if (name.equals("loot")) {
+            blockIcon = iconRegister.registerIcon("aura:auraLoot");
+            top = iconRegister.registerIcon("aura:auraLootTop");
+        }
+        if (name.equals("nether")) {
+            blockIcon = iconRegister.registerIcon("aura:ritualNether");
+
+        }
+        if (name.equals("end")) {
+            blockIcon = iconRegister.registerIcon("aura:ritualEnd");
+
+        }
+        if (name.equals("potion")) {
+            blockIcon = iconRegister.registerIcon("aura:brewer");
+
+        }
+        if (name.equals("enchant")) {
+            blockIcon = iconRegister.registerIcon("aura:enchanter");
+
+        }
+        if (name.equals("oreAdv")) {
+            blockIcon = iconRegister.registerIcon("aura:auraOreAdv");
+
+        }
+
+        if (name.equals("dye")) {
+            blockIcon = iconRegister.registerIcon("aura:dye");
+        }
+        if (name.equals("miner")) {
+            blockIcon = iconRegister.registerIcon("aura:miner");
+        }
+    }
+
+    @Override
+    public IIcon getIcon(int side, int meta) {
+        if (top != null && this.side != null && front != null) {
+            if (side == 1 || side == 0) {
+                return top;
+            }
+            if (side == meta) {
+                return front;
+            }
+            return this.side;
+        }
+        if (top != null) {
+            if (side == 1 || side == 0) {
+                return top;
+            }
+            return blockIcon;
+        }
+        return blockIcon;
     }
 
     @Override
     public ThaumicTinkererRecipe getRecipeItem() {
-        Item auraCrystal = BlockRegistry.getFirstItemFromClass(ItemAuraCrystal.class);
-
         if (name != null) {
             if (name.equals("plant")) {
-                return new PylonRecipe(new ItemStack(this), new PylonRecipeComponent(100000, ItemMaterial.getGem(EnumRainbowColor.GREEN)));
+                return new PylonRecipe(new ItemStack(this), new PylonRecipeComponent(new AuraQuantity(EnumAura.GREEN_AURA, 100000), ItemMaterial.getGem(EnumAura.GREEN_AURA)));
             }
             if (name.equals("ore")) {
-                return new CraftingBenchRecipe(new ItemStack(this), "IFI", "FIF", "IFI", 'F', new ItemStack(Blocks.FURNACE), 'I', new ItemStack(auraCrystal));
+                return new CraftingBenchRecipe(new ItemStack(this), "IFI", "FIF", "IFI", 'F', new ItemStack(Blocks.furnace), 'I', ItemAuraCrystal.getCrystalFromAura(EnumAura.WHITE_AURA));
             }
             if (name.equals("loot")) {
-                return new PylonRecipe(new ItemStack(this), new PylonRecipeComponent(100000, ItemMaterial.getGem(EnumRainbowColor.YELLOW)));
+                return new PylonRecipe(new ItemStack(this), new PylonRecipeComponent(new AuraQuantity(EnumAura.YELLOW_AURA, 100000), ItemMaterial.getGem(EnumAura.YELLOW_AURA)));
             }
             if (name.equals("mob")) {
-                return new PylonRecipe(new ItemStack(this), new PylonRecipeComponent(100000, ItemMaterial.getGem(EnumRainbowColor.VIOLET)));
+                return new PylonRecipe(new ItemStack(this), new PylonRecipeComponent(new AuraQuantity(EnumAura.VIOLET_AURA, 100000), ItemMaterial.getGem(EnumAura.VIOLET_AURA)));
             }
             if (name.equals("angel")) {
-                return new PylonRecipe(new ItemStack(this), new PylonRecipeComponent(300000, ItemMaterial.getPrism()),
-                        new PylonRecipeComponent(200000, new ItemStack(Items.IRON_INGOT)),
-                        new PylonRecipeComponent(200000, new ItemStack(Items.IRON_INGOT)),
-                        new PylonRecipeComponent(200000, new ItemStack(Items.IRON_INGOT)));
+                return new PylonRecipe(new ItemStack(this), new PylonRecipeComponent(new AuraQuantity(EnumAura.WHITE_AURA, 300000), ItemMaterial.getPrism()),
+                        new PylonRecipeComponent(new AuraQuantity(EnumAura.WHITE_AURA, 200000), new ItemStack(Items.iron_ingot)),
+                        new PylonRecipeComponent(new AuraQuantity(EnumAura.WHITE_AURA, 200000), new ItemStack(Items.iron_ingot)),
+                        new PylonRecipeComponent(new AuraQuantity(EnumAura.WHITE_AURA, 200000), new ItemStack(Items.iron_ingot)));
             }
             if (name.equals("nether")) {
-                return new PylonRecipe(new ItemStack(this), new PylonRecipeComponent(100000, ItemMaterial.getGem(EnumRainbowColor.RED)));
+                return new PylonRecipe(new ItemStack(this), new PylonRecipeComponent(new AuraQuantity(EnumAura.RED_AURA, 100000), ItemMaterial.getGem(EnumAura.RED_AURA)));
             }
             if (name.equals("potion")) {
-                return new PylonRecipe(new ItemStack(this), new PylonRecipeComponent(100000, ItemMaterial.getGem(EnumRainbowColor.ORANGE)));
+                return new PylonRecipe(new ItemStack(this), new PylonRecipeComponent(new AuraQuantity(EnumAura.WHITE_AURA, 100000), ItemMaterial.getGem(EnumAura.ORANGE_AURA)));
             }
             if (name.equals("enchant")) {
-                return new PylonRecipe(new ItemStack(this), new PylonRecipeComponent(250000, ItemMaterial.getGem(EnumRainbowColor.BLACK)));
+                return new PylonRecipe(new ItemStack(this), new PylonRecipeComponent(new AuraQuantity(EnumAura.WHITE_AURA, 250000), ItemMaterial.getGem(EnumAura.BLACK_AURA)));
             }
             if (name.equals("oreAdv")) {
-                return new CraftingBenchRecipe(new ItemStack(this), "GPG", "GCG", "GGG", 'P', ItemMaterial.getPrism(), 'G', new ItemStack(Blocks.GLASS), 'C', new ItemStack(getBlockFromName("ore")));
+                return new CraftingBenchRecipe(new ItemStack(this), "GPG", "GCG", "GGG", 'P', ItemMaterial.getPrism(), 'G', new ItemStack(Blocks.glass), 'C', new ItemStack(getBlockFromName("ore")));
             }
             if (name.equals("dye")) {
-                return new CraftingBenchRecipe(new ItemStack(this), "CCC", "CFC", "CCC", 'F', new ItemStack(Items.SHEARS), 'C', Blocks.WOOL);
+                return new CraftingBenchRecipe(new ItemStack(this), "CCC", "CFC", "CCC", 'F', new ItemStack(Items.shears), 'C', Blocks.wool);
             }
             if (name.equals("miner")) {
-                return new CraftingBenchRecipe(new ItemStack(this), "PAP", "IRI", "IRI", 'P', ItemMaterial.getPrism(), 'A', new ItemStack(Items.DIAMOND_PICKAXE), 'I', new ItemStack(Items.IRON_INGOT), 'R', BlockRegistry.getFirstItemFromClass(ItemRedHole.class));
+                return new CraftingBenchRecipe(new ItemStack(this), "PAP", "IRI", "IRI", 'P', ItemMaterial.getPrism(), 'A', new ItemStack(Items.diamond_pickaxe), 'I', new ItemStack(Items.iron_ingot), 'R', BlockRegistry.getFirstItemFromClass(ItemRedHole.class));
             }
             if (name.equals("end")) {
-                return new CraftingBenchRecipe(new ItemStack(this), "EPE", "ENE", "EEE", 'P', ItemMaterial.getPrism(), 'E', new ItemStack(Blocks.END_STONE), 'N', new ItemStack(getBlockFromName("nether")));
+                return new CraftingBenchRecipe(new ItemStack(this), "EPE", "ENE", "EEE", 'P', ItemMaterial.getPrism(), 'E', new ItemStack(Blocks.end_stone), 'N', new ItemStack(getBlockFromName("nether")));
             }
             if (name.equals("fish")) {
-                return new CraftingBenchRecipe(new ItemStack(this), "RRR", "III", 'R', new ItemStack(Items.FISHING_ROD), 'I', ItemMaterial.getIngot(EnumRainbowColor.BLUE));
+                return new CraftingBenchRecipe(new ItemStack(this), "RRR", "III", 'R', new ItemStack(Items.fishing_rod), 'I', ItemMaterial.getIngot(EnumAura.BLUE_AURA));
 
             }
         }
-        return new CraftingBenchRecipe(new ItemStack(this), "FFF", "FIF", "FFF", 'F', new ItemStack(Blocks.FURNACE), 'I', new ItemStack(auraCrystal));
+        return new CraftingBenchRecipe(new ItemStack(this), "FFF", "FIF", "FFF", 'F', new ItemStack(Blocks.furnace), 'I', ItemAuraCrystal.getCrystalFromAura(EnumAura.WHITE_AURA));
     }
 
     @Override
@@ -153,8 +225,7 @@ public class ConsumerBlock extends Block implements IToolTip, ITTinkererBlock, I
         return 0;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes"})
-	@Override
+    @Override
     public ArrayList<Object> getSpecialParameters() {
         ArrayList result = new ArrayList<Object>();
         result.add("plant");
@@ -175,21 +246,25 @@ public class ConsumerBlock extends Block implements IToolTip, ITTinkererBlock, I
 
     @Override
     public String getBlockName() {
+        // TODO Auto-generated method stub
         return "consumerBlock" + name;
     }
 
     @Override
     public boolean shouldRegister() {
+        // TODO Auto-generated method stub
         return true;
     }
 
     @Override
     public boolean shouldDisplayInTab() {
+        // TODO Auto-generated method stub
         return true;
     }
 
     @Override
     public Class<? extends ItemBlock> getItemBlock() {
+        // TODO Auto-generated method stub
         return null;
     }
 
@@ -242,17 +317,17 @@ public class ConsumerBlock extends Block implements IToolTip, ITTinkererBlock, I
     }
 
     @Override
-    public boolean hasComparatorInputOverride(IBlockState state) {
+    public boolean hasComparatorInputOverride() {
         return true;
     }
 
     @Override
-    public int getComparatorInputOverride(IBlockState state, World world, BlockPos pos ) {
-        TileEntity tileEntity = world.getTileEntity(pos);
+    public int getComparatorInputOverride(World world, int x, int y, int z, int meta) {
+        TileEntity tileEntity = world.getTileEntity(x, y, z);
         if (tileEntity instanceof ConsumerTile) {
             return (int) (15D * (((double) ((ConsumerTile) tileEntity).progress) / ((double) ((ConsumerTile) tileEntity).getMaxProgress())));
         } else {
-            return super.getComparatorInputOverride(state, world, pos);
+            return super.getComparatorInputOverride(world, x, y, z, meta);
         }
     }
 
@@ -262,7 +337,9 @@ public class ConsumerBlock extends Block implements IToolTip, ITTinkererBlock, I
 
         try {
             return getTileEntity().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
         return null;
@@ -270,10 +347,10 @@ public class ConsumerBlock extends Block implements IToolTip, ITTinkererBlock, I
 
 
     @Override
-    public List<String> getTooltipData(World world, EntityPlayer player, BlockPos pos) {
+    public List<String> getTooltipData(World world, EntityPlayer player, int x, int y, int z) {
         List<String> result = new ArrayList<String>();
-        if (world.getTileEntity(pos) instanceof ConsumerTile) {
-            ConsumerTile consumerTile = (ConsumerTile) world.getTileEntity(pos);
+        if (world.getTileEntity(x, y, z) instanceof ConsumerTile) {
+            ConsumerTile consumerTile = (ConsumerTile) world.getTileEntity(x, y, z);
             result.add("Progress: " + consumerTile.progress + " / " + consumerTile.getMaxProgress());
             result.add("Power per progress: " + consumerTile.getPowerPerProgress());
             result.add("Last Power: " + consumerTile.lastPower);

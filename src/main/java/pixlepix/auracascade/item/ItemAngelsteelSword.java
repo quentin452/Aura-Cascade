@@ -1,6 +1,7 @@
 package pixlepix.auracascade.item;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -10,20 +11,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import pixlepix.auracascade.AuraCascade;
-import pixlepix.auracascade.data.EnumRainbowColor;
+import pixlepix.auracascade.data.EnumAura;
 import pixlepix.auracascade.data.IAngelsteelTool;
 import pixlepix.auracascade.main.ParticleEffects;
 import pixlepix.auracascade.potions.PotionManager;
 import pixlepix.auracascade.registry.*;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by localmacaccount on 1/19/15.
@@ -32,7 +31,8 @@ public class ItemAngelsteelSword extends ItemSword implements ITTinkererItem, IA
     public static final String name = "angelsteelSword";
     public static String[] patrons = new String[]{"Pixlepix", "JGPhoenix"};
     public int degree = 0;
-    public EnumRainbowColor[] auraSwords = new EnumRainbowColor[]{EnumRainbowColor.BLUE, EnumRainbowColor.GREEN, EnumRainbowColor.ORANGE, EnumRainbowColor.RED, EnumRainbowColor.VIOLET, EnumRainbowColor.YELLOW};
+    public EnumAura[] auraSwords = new EnumAura[]{EnumAura.BLUE_AURA, EnumAura.GREEN_AURA, EnumAura.ORANGE_AURA, EnumAura.RED_AURA, EnumAura.VIOLET_AURA, EnumAura.YELLOW_AURA};
+    public HashMap<EnumAura, IIcon> iconHashMap = new HashMap<EnumAura, IIcon>();
 
     public ItemAngelsteelSword(Integer i) {
         super(AngelsteelToolHelper.materials[i]);
@@ -44,11 +44,17 @@ public class ItemAngelsteelSword extends ItemSword implements ITTinkererItem, IA
         this(0);
     }
 
-    public static ItemStack getStackFirstDegree(EnumRainbowColor aura) {
+    public static ItemStack getStackFirstDegree(EnumAura aura) {
         return ((ItemAngelsteelSword) BlockRegistry.getFirstItemFromClass(ItemAngelsteelSword.class)).getStack(aura);
     }
 
-
+    @Override
+    public void registerIcons(IIconRegister register) {
+        itemIcon = register.registerIcon("aura:angel_sword");
+        for (EnumAura aura : auraSwords) {
+            iconHashMap.put(aura, register.registerIcon("aura:angel_sword" + aura.name));
+        }
+    }
 
     @Override
     public int getCreativeTabPriority() {
@@ -56,22 +62,32 @@ public class ItemAngelsteelSword extends ItemSword implements ITTinkererItem, IA
     }
 
     @Override
-    public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving) {
+    public boolean onBlockDestroyed(ItemStack p_150894_1_, World p_150894_2_, Block p_150894_3_, int p_150894_4_, int p_150894_5_, int p_150894_6_, EntityLivingBase p_150894_7_) {
         return true;
     }
 
-    public static EnumRainbowColor getAura(ItemStack stack) {
-        if (stack.getTagCompound() != null && stack.getTagCompound().hasKey("color")) {
-            return EnumRainbowColor.values()[stack.getTagCompound().getInteger("color")];
+    @Override
+    public IIcon getIconIndex(ItemStack stack) {
+        if (stack.stackTagCompound != null && stack.stackTagCompound.hasKey("aura")) {
+            EnumAura aura = EnumAura.values()[stack.stackTagCompound.getInteger("aura")];
+            return iconHashMap.get(aura);
 
         }
-        return EnumRainbowColor.RED;
+        return super.getIconIndex(stack);
     }
 
-    public ItemStack getStack(EnumRainbowColor aura) {
+    public EnumAura getAura(ItemStack stack) {
+        if (stack.stackTagCompound != null && stack.stackTagCompound.hasKey("aura")) {
+            return EnumAura.values()[stack.stackTagCompound.getInteger("aura")];
+
+        }
+        return EnumAura.RED_AURA;
+    }
+
+    public ItemStack getStack(EnumAura aura) {
         ItemStack stack = new ItemStack(this);
-        stack.setTagCompound(new NBTTagCompound());
-        stack.getTagCompound().setInteger("color", aura.ordinal());
+        stack.stackTagCompound = new NBTTagCompound();
+        stack.stackTagCompound.setInteger("aura", aura.ordinal());
         return stack;
     }
 
@@ -101,32 +117,32 @@ public class ItemAngelsteelSword extends ItemSword implements ITTinkererItem, IA
     }
 
     @Override
-    public void getSubItems(Item item, CreativeTabs tab, List<ItemStack> list) {
-        for (EnumRainbowColor aura : auraSwords) {
+    public void getSubItems(Item item, CreativeTabs tab, List list) {
+        for (EnumAura aura : auraSwords) {
             list.add(getStack(aura));
         }
     }
 
     @Override
     public boolean hitEntity(ItemStack stack, EntityLivingBase entity, EntityLivingBase attacker) {
-        EnumRainbowColor aura = getAura(stack);
-        if (aura == EnumRainbowColor.RED) {
-            entity.addPotionEffect(new PotionEffect(PotionManager.potionRed, degree * degree * 100 + 100));
+        EnumAura aura = getAura(stack);
+        if (aura == EnumAura.RED_AURA) {
+            entity.addPotionEffect(new PotionEffect(PotionManager.potionRed.getId(), degree * degree * 100 + 100));
         }
-        if (aura == EnumRainbowColor.ORANGE) {
-            entity.addPotionEffect(new PotionEffect(PotionManager.potionOrange, degree * degree * 100 + 100));
+        if (aura == EnumAura.ORANGE_AURA) {
+            entity.addPotionEffect(new PotionEffect(PotionManager.potionOrange.getId(), degree * degree * 100 + 100));
         }
-        if (aura == EnumRainbowColor.YELLOW) {
-            entity.addPotionEffect(new PotionEffect(PotionManager.potionYellow, degree * degree * 100 + 100));
+        if (aura == EnumAura.YELLOW_AURA) {
+            entity.addPotionEffect(new PotionEffect(PotionManager.potionYellow.getId(), degree * degree * 100 + 100));
         }
-        if (aura == EnumRainbowColor.GREEN) {
-            entity.addPotionEffect(new PotionEffect(PotionManager.potionGreen, degree * degree * 100 + 100));
+        if (aura == EnumAura.GREEN_AURA) {
+            entity.addPotionEffect(new PotionEffect(PotionManager.potionGreen.getId(), degree * degree * 100 + 100));
         }
-        if (aura == EnumRainbowColor.BLUE) {
-            entity.addPotionEffect(new PotionEffect(PotionManager.potionBlue, degree * degree * 100 + 100));
+        if (aura == EnumAura.BLUE_AURA) {
+            entity.addPotionEffect(new PotionEffect(PotionManager.potionBlue.getId(), degree * degree * 100 + 100));
         }
-        if (aura == EnumRainbowColor.VIOLET) {
-            entity.addPotionEffect(new PotionEffect(PotionManager.potionPurple, degree * degree * 100 + 100));
+        if (aura == EnumAura.VIOLET_AURA) {
+            entity.addPotionEffect(new PotionEffect(PotionManager.potionPurple.getId(), degree * degree * 100 + 100));
         }
         return true;
     }
@@ -142,7 +158,7 @@ public class ItemAngelsteelSword extends ItemSword implements ITTinkererItem, IA
 
     @Override
     public void onUpdate(ItemStack stack, World w, Entity e, int p_77663_4_, boolean p_77663_5_) {
-        if (w.isRemote && e instanceof EntityPlayer && Arrays.asList(patrons).contains(e.getDisplayName().getUnformattedText())) {
+        if (w.isRemote && e instanceof EntityPlayer && Arrays.asList(patrons).contains(((EntityPlayer) e).getDisplayName())) {
             float hue = (w.getTotalWorldTime() % 1200) / 1200F;
             Color color = Color.getHSBColor(hue, 1F, .5F);
             Random r = new Random();
@@ -154,8 +170,8 @@ public class ItemAngelsteelSword extends ItemSword implements ITTinkererItem, IA
     public ThaumicTinkererRecipe getRecipeItem() {
         ThaumicTinkererRecipeMulti result = new ThaumicTinkererRecipeMulti();
         ArrayList<ThaumicTinkererRecipe> recipes = new ArrayList<ThaumicTinkererRecipe>();
-        for (EnumRainbowColor aura : auraSwords) {
-            recipes.add(new CraftingBenchRecipe(getStack(aura), " A ", " A ", " C ", 'A', new ItemStack(BlockRegistry.getFirstItemFromClass(ItemAngelsteelIngot.class), 1, degree), 'C', ItemMaterial.getIngot(aura)));
+        for (EnumAura aura : auraSwords) {
+            recipes.add(new CraftingBenchRecipe(getStack(aura), " A ", " A ", " C ", 'A', new ItemStack(BlockRegistry.getFirstItemFromClass(ItemAngelsteelIngot.class), 1, degree), 'C', ItemAuraCrystal.getCrystalFromAura(aura)));
         }
         result.recipes = recipes;
         return result;

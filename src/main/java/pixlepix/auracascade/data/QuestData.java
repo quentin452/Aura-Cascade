@@ -2,18 +2,18 @@ package pixlepix.auracascade.data;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.IExtendedEntityProperties;
+import pixlepix.auracascade.QuestManager;
 
 import java.util.ArrayList;
 
 /**
  * Created by localmacaccount on 5/31/15.
  */
-public class QuestData implements Capability.IStorage<QuestData>{
-	//TODO Fix QuestData
+public class QuestData implements IExtendedEntityProperties {
+
 
     public final static String EXT_PROP_NAME = "ACQuest";
     public ArrayList<Quest> completedQuests = new ArrayList<Quest>();
@@ -26,9 +26,8 @@ public class QuestData implements Capability.IStorage<QuestData>{
         this(new ArrayList<Quest>());
     }
 
-    public static void register(EntityPlayer player) {
-       // player.registerExtendedProperties(QuestData.EXT_PROP_NAME, new QuestData());
-     //   player.capabilities.writeCapabilitiesToNBT(tagCompound);
+    public static final void register(EntityPlayer player) {
+        player.registerExtendedProperties(QuestData.EXT_PROP_NAME, new QuestData());
     }
 
     /**
@@ -37,7 +36,6 @@ public class QuestData implements Capability.IStorage<QuestData>{
      *
      * @param compound The compound to save to.
      */
-    /*
     @Override
     public void saveNBTData(NBTTagCompound compound) {
         NBTTagCompound properties = new NBTTagCompound();
@@ -56,7 +54,6 @@ public class QuestData implements Capability.IStorage<QuestData>{
      *
      * @param compound The compound to load from.
      */
-    /*
     @Override
     public void loadNBTData(NBTTagCompound compound) {
         NBTTagCompound properties = compound.getCompoundTag(EXT_PROP_NAME);
@@ -65,7 +62,7 @@ public class QuestData implements Capability.IStorage<QuestData>{
             completedQuests.add(QuestManager.quests.get(i));
         }
     }
-    */
+
     /**
      * Used to initialize the extended properties with the entity that this is attached to, as well
      * as the world object.
@@ -76,18 +73,8 @@ public class QuestData implements Capability.IStorage<QuestData>{
      * @param entity The entity that this extended properties is attached to
      * @param world  The world in which the entity exists
      */
-    
+    @Override
     public void init(Entity entity, World world) {
 
     }
-
-	@Override
-	public NBTBase writeNBT(Capability<QuestData> capability, QuestData instance, EnumFacing side) {
-		return null;
-	}
-
-	@Override
-	public void readNBT(Capability<QuestData> capability, QuestData instance, EnumFacing side, NBTBase nbt) {
-		
-	}
 }
