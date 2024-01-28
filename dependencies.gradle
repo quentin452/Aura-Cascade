@@ -37,3 +37,8 @@ dependencies {
     implementation "curse.maven:notenoughitems-gtnh-358228:4799391-deobf-sources-api"
     implementation "curse.maven:baubles-227083:2224857-deobf-sources-api"
 }
+jar {
+    manifest {
+        attributes 'FMLAT': 'aura_at.cfg'
+    }
+}
